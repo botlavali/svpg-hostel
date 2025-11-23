@@ -69,7 +69,12 @@ app.use((req, res, next) => {
 
 
 // Handle preflight everywhere
-app.options("*", cors());
+app.use(cors({
+  origin: "https://mohansvpg-frontend.onrender.com",
+  methods: "GET,POST,PUT,DELETE",
+  credentials: true
+}));
+
 
 /* --------------------------------------------------
    BODY PARSER
