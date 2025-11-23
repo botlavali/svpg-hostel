@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000", // adjust backend URL if different
+  baseURL: "https://mohansvpg-backend.onrender.com", // Render backend URL
+  withCredentials: true,
 });
 
 export default api;
