@@ -246,7 +246,7 @@ Join: ${booking.joinDate?.slice(0, 10)}
                 <div className="d-flex">
                   {b.photo && (
                     <img
-                      src={`http://localhost:5000/${b.photo}`}
+                      src={`https://mohansvpg-frontend.onrender.com/${b.photo}`}
                       alt={b.name}
                       style={{
                         width: 60,
