@@ -24,13 +24,17 @@ const app = express();
 /* --------------------------------------------------
    HELMET FIX FOR IMAGES
 -------------------------------------------------- */
+/* --------------------------------------------------
+   HELMET FIX (DO NOT BLOCK CORS)
+-------------------------------------------------- */
 app.use(
   helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" },
-    crossOriginOpenerPolicy: false,
     crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
+    crossOriginOpenerPolicy: false,
   })
 );
+
 
 /* --------------------------------------------------
    CORS — PRODUCTION + LOCAL DEVELOPMENT
