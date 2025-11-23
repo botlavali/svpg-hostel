@@ -1,0 +1,205 @@
+/* ================================================
+   🌟 S.V PG Bookings Page (Matches RoomDetails)
+   ================================================ */
+
+/* Base Setup */
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #f1f5ff, #ffffff);
+  color: #212529;
+}
+
+/* Page container animation */
+.container {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Header */
+h1.text-primary {
+  font-weight: 700;
+  color: #0d6efd !important;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(13, 110, 253, 0.1);
+}
+
+/* Search Bar */
+.search-bar input {
+  border-radius: 10px;
+  border: 1px solid #cfd8e3;
+  padding: 10px 14px;
+  transition: 0.2s ease;
+}
+
+.search-bar input:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* ===============================
+   📊 Stats Badges (Top Section)
+=============================== */
+.d-flex.gap-3 .badge {
+  font-size: 0.95rem;
+  font-weight: 600;
+  min-width: 130px;
+  padding: 0.45em 0.6em;
+  border-radius: 0.7rem;
+  text-align: center;
+}
+
+.badge.bg-primary {
+  background: linear-gradient(90deg, #0d6efd, #4da3ff);
+}
+
+.badge.bg-success {
+  background: linear-gradient(90deg, #198754, #28b463);
+}
+
+.badge.bg-warning {
+  background: linear-gradient(90deg, #ffc107, #ffe082);
+  color: #212529;
+}
+
+/* ===============================
+   📦 Booking Card Layout
+=============================== */
+.booking-card {
+  border: none;
+  border-radius: 1rem;
+  background: #ffffff;
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.1);
+}
+
+.booking-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(13, 110, 253, 0.18);
+}
+
+/* Image */
+.booking-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+/* Booking Info */
+.card-body {
+  text-align: center;
+  padding: 1.2rem 1rem;
+}
+
+.card-title {
+  font-weight: 700;
+  color: #0d6efd;
+  font-size: 1.1rem;
+}
+
+.text-secondary {
+  font-size: 0.9rem;
+}
+
+/* Badges inside card */
+.card-body .badge {
+  font-size: 0.85rem;
+  padding: 0.45em 0.6em;
+  font-weight: 600;
+  border-radius: 0.6rem;
+  margin: 2px;
+}
+
+.badge.bg-info {
+  background: #e3f2fd;
+  color: #0d6efd;
+}
+
+.badge.bg-warning {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badge.bg-success {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.badge.bg-primary {
+  background: #e7f1ff;
+  color: #0d6efd;
+}
+
+/* Aadhaar Button */
+.btn-outline-secondary {
+  border: 1px solid #0d6efd;
+  color: #0d6efd;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-secondary:hover {
+  background: #0d6efd;
+  color: #fff;
+}
+
+/* Footer */
+.card-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  text-align: center;
+  padding: 0.6rem;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+/* ===============================
+   ✨ Empty State
+=============================== */
+.text-muted.mt-5 {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.text-muted.mt-5 h5 {
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+/* ===============================
+   📱 Responsive
+=============================== */
+@media (max-width: 768px) {
+  .booking-card img {
+    height: 200px;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  h1.text-primary {
+    font-size: 1.5rem;
+  }
+
+  .badge {
+    font-size: 0.8rem;
+  }
+}
+
+/* ===============================
+   🎨 Animations
+=============================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

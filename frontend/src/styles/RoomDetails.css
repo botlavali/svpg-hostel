@@ -1,0 +1,202 @@
+/* frontend/src/styles/RoomDetails.css */
+
+/* 🌟 Page layout */
+.container {
+  max-width: 1100px;
+}
+
+/* 🔍 Search bar */
+.search-bar input {
+  border-radius: 25px;
+  padding: 10px 16px;
+  font-size: 15px;
+  border: 1.5px solid #d0d0d0;
+  transition: all 0.3s ease;
+}
+
+.search-bar input:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 6px rgba(13, 110, 253, 0.3);
+}
+
+/* 🪪 Booking Card Styling */
+.booking-card {
+  border-radius: 16px;
+  background: #ffffff;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e5e5e5;
+}
+
+.booking-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.booking-card .card-body {
+  background: #fdfdfd;
+  border-left: 3px solid #0d6efd;
+  border-radius: 0 16px 16px 0;
+}
+
+.booking-card h5 {
+  color: #0d6efd;
+  font-weight: 700;
+}
+
+/* 🧩 Text style improvements */
+.card-text strong {
+  color: #212529;
+}
+
+.card-text {
+  font-size: 15px;
+  color: #555;
+}
+
+/* 📸 Image section */
+.booking-card img {
+  border-radius: 12px 0 0 12px;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ✏️ Buttons Styling */
+.btn-outline-primary {
+  border-radius: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.btn-danger {
+  border-radius: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(220, 53, 69, 0.4);
+}
+
+/* ✅ Aadhaar button */
+.btn-outline-secondary {
+  border-radius: 20px;
+  font-size: 14px;
+  padding: 4px 10px;
+}
+
+/* 🧭 Empty state */
+.text-muted {
+  font-size: 17px;
+}
+
+/* ✨ Update Form Overlay */
+.update-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1050;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 📋 Update Form Card */
+.update-form {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 20px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.update-form h4 {
+  text-align: center;
+  font-weight: 700;
+}
+
+.update-form input {
+  border-radius: 10px;
+  border: 1.5px solid #d0d0d0;
+}
+
+.update-form input:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 6px rgba(13, 110, 253, 0.3);
+}
+
+.update-form .btn {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* 🌈 Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.booking-card {
+  transition: transform 0.2s ease-in-out;
+}
+.booking-card:hover {
+  transform: translateY(-4px);
+}
+
+.update-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.update-form {
+  width: 400px;
+  background: #fff;
+}
+
+.btn-success {
+  background: linear-gradient(90deg, #198754, #28a745);
+  border: none;
+  transition: 0.2s;
+}
+.btn-success:hover {
+  transform: scale(1.05);
+  background: linear-gradient(90deg, #157347, #1e8e5a);
+}
+/* RoomDetails.css */
+.hover-card:hover {
+  transform: translateY(-5px);
+  transition: 0.3s ease;
+}
+
+.card-title {
+  font-size: 1.1rem;
+}
+
+.badge {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+

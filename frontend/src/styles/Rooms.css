@@ -1,0 +1,227 @@
+/* 🌈 Global Page Style */
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
+  min-height: 100vh;
+  color: #212529;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.container-fluid {
+  animation: fadeIn 0.7s ease-in-out;
+}
+
+/* 🧭 Sidebar */
+aside .card {
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #ffffff, #f1f6ff);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+aside .card:hover {
+  transform: translateY(-5px);
+}
+aside .btn {
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/* 🏠 Page Headings */
+h2 {
+  font-weight: 700;
+  color: #0d6efd;
+  letter-spacing: 0.4px;
+  text-shadow: 0 1px 2px rgba(13, 110, 253, 0.1);
+}
+h5 {
+  color: #1565c0;
+  font-weight: 600;
+}
+
+/* 🪞 Avatar Animation */
+.mx-auto.rounded-circle {
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(13, 110, 253, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+  }
+}
+
+/* 🧾 Room Card */
+.room-card {
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff, #f7faff);
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+}
+.room-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(13, 110, 253, 0.15);
+}
+
+/* 🛏️ Bed Icons (Unified Style) */
+.bed-icon {
+  width: 100px;
+  height: 60px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-size: 0.9rem;
+}
+
+/* 🟢 Available Bed */
+.bed-icon.available {
+  background: linear-gradient(145deg, #d9fdd3, #c2f0ba);
+  border-color: #81c784;
+  color: #256029;
+}
+.bed-icon.available:hover {
+  background: linear-gradient(145deg, #c2f0ba, #b9e8af);
+  transform: scale(1.07);
+  box-shadow: 0 6px 14px rgba(129, 199, 132, 0.4);
+}
+
+/* 🔵 Selected Bed */
+.bed-icon.selected {
+  background: linear-gradient(145deg, #007bff, #3b9dff);
+  color: #fff;
+  border-color: #0d6efd;
+  box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+}
+.bed-icon.selected:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 14px rgba(13, 110, 253, 0.6);
+}
+
+/* 🔴 Booked Bed */
+.bed-icon.booked {
+  background: linear-gradient(145deg, #f8d7da, #f5b7b1);
+  border-color: #f1948a;
+  color: #721c24;
+  cursor: not-allowed;
+  opacity: 0.95;
+}
+.bed-icon.booked:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Bed Icon Content */
+.bed-icon-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.bed-icon-emoji {
+  font-size: 22px;
+}
+.bed-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* 📋 Booking Form Bottom Bar */
+.form-card {
+  border-top: 4px solid #0d6efd;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+  animation: slideUp 0.6s ease;
+}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🗂️ Input Fields */
+.form-label {
+  color: #1565c0;
+  font-weight: 600;
+}
+input[type="file"],
+input[type="text"],
+input[type="date"],
+input[type="email"] {
+  border-radius: 10px !important;
+  transition: all 0.2s ease;
+}
+input:focus {
+  border-color: #0d6efd !important;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* 📸 File Inputs */
+input[type="file"] {
+  border: 2px dashed #90caf9;
+  background: #f4f9ff;
+  padding: 6px;
+  color: #0d47a1;
+  font-weight: 500;
+}
+input[type="file"]:hover {
+  background: #e3f2fd;
+  border-color: #0d6efd;
+}
+
+/* 💳 Payment Modal */
+.modal-content {
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(13, 110, 253, 0.25);
+}
+.modal-header {
+  background: linear-gradient(90deg, #0d6efd, #2196f3);
+  color: #fff;
+}
+.modal-footer .btn {
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* 🎨 Buttons */
+.btn-primary {
+  background: linear-gradient(90deg, #007bff, #2196f3);
+  border: none !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-primary:hover {
+  background: linear-gradient(90deg, #0056d2, #1976d2);
+  transform: scale(1.03);
+  box-shadow: 0 0 12px rgba(25, 118, 210, 0.3);
+}
+
+/* ✨ Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

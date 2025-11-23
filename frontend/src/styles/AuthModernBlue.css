@@ -1,0 +1,284 @@
+/* ============================================
+   🌌 S.V PG — Auth Page (Dark Blue Neon 3D)
+   ============================================ */
+.auth-blue-container {
+  display: flex;
+  height: 100vh;
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+  background: radial-gradient(circle at top left, #001233, #000814 60%);
+}
+
+/* =======================
+   🌙 LEFT SECTION
+======================= */
+.auth-left {
+  flex: 1;
+  background: linear-gradient(135deg, #001845, #001d6e, #003566);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  text-align: center;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+/* Floating particle glow */
+.auth-left::before {
+  content: "";
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  top: -100px;
+  right: -120px;
+  background: radial-gradient(circle, rgba(0, 123, 255, 0.35), transparent 70%);
+  animation: glowMove 8s infinite alternate ease-in-out;
+}
+
+@keyframes glowMove {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(30px) rotate(25deg);
+  }
+}
+
+/* 3D Logo Animation */
+.brand-circle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ffffff, #dfe9ff);
+  color: #0d6efd;
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 5px 5px 15px rgba(0, 0, 0, 0.2),
+    0 8px 25px rgba(13, 110, 253, 0.3);
+  animation: bounceLogo 2s ease infinite alternate;
+}
+
+@keyframes bounceLogo {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05) rotate(3deg);
+  }
+}
+
+.auth-left h2 {
+  font-weight: 800;
+  font-size: 1.8rem;
+  margin-top: 1rem;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(13, 110, 253, 0.6);
+}
+
+.auth-left p {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  margin-top: 0.5rem;
+}
+
+.auth-left .btn-outline-light {
+  border: 2px solid #fff;
+  border-radius: 30px;
+  padding: 8px 24px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.auth-left .btn-outline-light:hover {
+  background: #fff;
+  color: #0d6efd;
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+/* =======================
+   💫 RIGHT SECTION
+======================= */
+.auth-right {
+  flex: 1;
+  background: linear-gradient(135deg, #ffffff, #f4f7ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+/* 3D Card */
+.auth-card {
+  width: 90%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 15px 30px rgba(13, 110, 253, 0.15),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.05);
+  transform: rotateY(0deg);
+  transition: transform 0.8s ease;
+  animation: fadeInCard 0.8s ease forwards;
+}
+.auth-card:hover {
+  transform: rotateY(2deg);
+}
+
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: translateY(20px) rotateY(10deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateY(0);
+  }
+}
+
+/* Title */
+.auth-card h3 {
+  font-weight: 800;
+  color: #0d6efd;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(13, 110, 253, 0.2);
+}
+
+.auth-card p {
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Inputs with icons + floating label */
+.input-group {
+  position: relative;
+  margin-bottom: 1.3rem;
+}
+
+.input-group input {
+  width: 100%;
+  border: 1.5px solid #d0d0d0;
+  border-radius: 12px;
+  padding: 10px 14px 10px 38px;
+  transition: all 0.3s ease;
+  background: #f9faff;
+}
+
+.input-group i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0d6efd;
+  font-size: 1.1rem;
+}
+
+.input-group input:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 10px rgba(13, 110, 253, 0.2);
+  background: #ffffff;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(90deg, #0d6efd, #007bff);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 12px rgba(13, 110, 253, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(90deg, #0056d2, #0d6efd);
+  transform: scale(1.04);
+  box-shadow: 0 10px 18px rgba(13, 110, 253, 0.4);
+}
+
+/* 3D Hover animation for inputs */
+.auth-card input:focus {
+  transform: scale(1.02);
+  transition: 0.2s ease;
+}
+
+/* Link Text */
+.link-text {
+  cursor: pointer;
+  color: #0d6efd;
+  transition: color 0.3s ease;
+  font-weight: 600;
+}
+.link-text:hover {
+  color: #003d99;
+  text-decoration: underline;
+}
+
+/* =======================
+   ✅ Popup Success Box
+======================= */
+.popup-box {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.popup-content {
+  background: #ffffff;
+  padding: 2rem 2.5rem;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(13, 110, 253, 0.4);
+  animation: popupIn 0.4s ease;
+}
+
+.popup-content h5 {
+  color: #0d6efd;
+  font-weight: 700;
+}
+
+@keyframes popupIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* =======================
+   📱 Responsive
+======================= */
+@media (max-width: 768px) {
+  .auth-blue-container {
+    flex-direction: column;
+  }
+
+  .auth-left {
+    flex: none;
+    height: 35vh;
+  }
+
+  .auth-right {
+    flex: none;
+    height: 65vh;
+  }
+
+  .brand-circle {
+    width: 100px;
+    height: 100px;
+    font-size: 2.2rem;
+  }
+}
