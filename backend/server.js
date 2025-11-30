@@ -39,14 +39,11 @@ app.use(
 app.use(
   cors({
     origin: [
-      "https://37ptgzfs-3000.inc1.devtunnels.ms",
-      "https://37ptgzfs-3001.inc1.devtunnels.ms",  // Frontend tunnel
-      "https://37ptgzfs-5000.inc1.devtunnels.ms",  // Backend tunnel
-      "http://localhost:3001",                     // Local testing frontend
-      "http://localhost:3000"                      // Optional react dev
+      "https://svpghostel.vercel.app",  // your frontend domain
+      "http://localhost:3000"           // for local development
     ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 
