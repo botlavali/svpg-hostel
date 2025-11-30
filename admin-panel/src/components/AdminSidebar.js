@@ -5,16 +5,26 @@ import "./AdminSidebar.css";
 export default function AdminSidebar({ onClose }) {
   const navigate = useNavigate();
 
-  const storedAdmin = localStorage.getItem("adminUser");
-
+  // -----------------------
+  // SAFE ADMIN PARSE BLOCK
+  // -----------------------
   let admin = null;
+
   try {
-    admin = storedAdmin ? JSON.parse(storedAdmin) : null;
-  } catch (err) {
-    console.error("Admin parse error:", err);
-    admin = null;
+    const raw = localStorage.getItem("adminUser");
+
+    if (raw && raw !== "undefined" && raw !== "null") {
+      admin = JSON.parse(raw);
+    } else {
+      admin = null;
+    }
+  } catch {
+    admin = null; // fallback without console error
   }
 
+  // -----------------------
+  // LOGOUT
+  // -----------------------
   const logout = () => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminUser");
@@ -32,10 +42,22 @@ export default function AdminSidebar({ onClose }) {
         <NavLink className="sidebar-link" to="/admin/dashboard" onClick={onClose}>
           📊 Dashboard
         </NavLink>
-        <NavLink className="sidebar-link" to="/admin/rooms">🛏 Rooms</NavLink>
-        <NavLink className="sidebar-link" to="/admin/roomdetails">Room Details</NavLink>
-        <NavLink className="sidebar-link" to="/admin/bookings">📘 Bookings</NavLink>
-        <NavLink className="sidebar-link" to="/admin/payments">💳 Payments</NavLink>
+
+        <NavLink className="sidebar-link" to="/admin/rooms">
+          🛏 Rooms
+        </NavLink>
+
+        <NavLink className="sidebar-link" to="/admin/roomdetails">
+          Room Details
+        </NavLink>
+
+        <NavLink className="sidebar-link" to="/admin/bookings">
+          📘 Bookings
+        </NavLink>
+
+        <NavLink className="sidebar-link" to="/admin/payments">
+          💳 Payments
+        </NavLink>
       </div>
 
       <hr className="sidebar-divider" />
