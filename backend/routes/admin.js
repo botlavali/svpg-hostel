@@ -13,15 +13,30 @@ const router = express.Router();
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
 
-  // Hardcoded admin login (You can modify based on your DB)
+  // Hardcoded admin credentials
   if (email === "admin@gmail.com" && password === "admin123") {
-    const token = jwt.sign({ role: "admin" }, process.env.ADMIN_JWT_SECRET, {
-      expiresIn: "7d",
+    const adminData = {
+      name: "Admin",
+      email: "admin@gmail.com",
+      role: "admin",
+    };
+
+    const token = jwt.sign(
+      adminData,
+      process.env.ADMIN_JWT_SECRET || "AdminSecretKey",
+      { expiresIn: "7d" }
+    );
+
+    return res.json({
+      success: true,
+      token,
+      admin: adminData, // FRONTEND NEEDS THIS
     });
-    return res.json({ success: true, token });
   }
 
-  return res.status(401).json({ success: false, message: "Invalid credentials" });
+  return res
+    .status(401)
+    .json({ success: false, message: "Invalid credentials" });
 });
 
 /* --------------------------------------
@@ -31,15 +46,15 @@ function adminAuth(req, res, next) {
   const header = req.headers.authorization || "";
 
   if (!header.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ success: false, message: "Unauthorized" });
   }
 
   try {
     const token = header.split(" ")[1];
     jwt.verify(token, process.env.ADMIN_JWT_SECRET || "AdminSecretKey");
-    return next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid token" });
+    next();
+  } catch {
+    return res.status(401).json({ success: false, message: "Invalid token" });
   }
 }
 
@@ -54,8 +69,7 @@ router.get("/payments", adminAuth, async (req, res) => {
       .sort({ createdAt: -1 });
 
     res.json({ success: true, payments });
-  } catch (err) {
-    console.error("Admin Payments Error:", err);
+  } catch {
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
@@ -69,21 +83,21 @@ router.get("/overview", adminAuth, async (req, res) => {
     const totalBookings = await Booking.countDocuments();
     const totalPayments = await Payment.countDocuments();
 
-    const totalAgg = await Payment.aggregate([
-      { $group: { _id: null, total: { $sum: "$amount" } } }
+    const revenueAgg = await Payment.aggregate([
+      { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
 
-    const totalRevenue = totalAgg.length ? totalAgg[0].total : 0;
+    const totalRevenue =
+      revenueAgg.length > 0 ? revenueAgg[0].total : 0;
 
     res.json({
       success: true,
       totalUsers,
       totalBookings,
       totalPayments,
-      totalRevenue
+      totalRevenue,
     });
-  } catch (err) {
-    console.error("Overview Error:", err);
+  } catch {
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
