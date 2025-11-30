@@ -4,7 +4,16 @@ import "./AdminSidebar.css"; // IMPORTANT
 
 export default function AdminSidebar({ onClose }) {
   const navigate = useNavigate();
-  const admin = JSON.parse(localStorage.getItem("adminUser"));
+
+  // SAFE JSON PARSE — prevents dashboard crash
+  let admin = null;
+  try {
+    const stored = localStorage.getItem("adminUser");
+    admin = stored ? JSON.parse(stored) : null;
+  } catch (err) {
+    console.error("Admin parse error:", err);
+    admin = null;
+  }
 
   const logout = () => {
     localStorage.removeItem("adminToken");
@@ -20,18 +29,18 @@ export default function AdminSidebar({ onClose }) {
       </h3>
 
       <div className="sidebar-menu">
+
         <NavLink className="sidebar-link" to="/admin/dashboard" onClick={onClose}>
           📊 Dashboard
         </NavLink>
-        <NavLink className="sidebar-link" to="/admin/rooms">
+
+        <NavLink className="sidebar-link" to="/admin/rooms" onClick={onClose}>
           🛏 Rooms
         </NavLink>
 
-        <NavLink className="sidebar-link" to="/admin/roomdetails">
-          Room Details
+        <NavLink className="sidebar-link" to="/admin/roomdetails" onClick={onClose}>
+          📝 Room Details
         </NavLink>
-
-
 
         <NavLink className="sidebar-link" to="/admin/bookings" onClick={onClose}>
           📘 Bookings
