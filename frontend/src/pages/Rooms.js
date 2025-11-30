@@ -1,5 +1,6 @@
 // frontend/src/pages/Rooms.js
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import "../styles/Rooms.css";
@@ -9,6 +10,7 @@ export default function Rooms() {
 
   const [user, setUser] = useState(null);
   const [bookedBeds, setBookedBeds] = useState([]);
+  // removed unused: const [bookings, setBookings] = useState([]);
   const [selectedBeds, setSelectedBeds] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
@@ -28,14 +30,18 @@ export default function Rooms() {
   const [confirmCode, setConfirmCode] = useState("");
   const [successPopup, setSuccessPopup] = useState(false);
 
-  // Check login & rules before loading
+  // -----------------------------
+  // LOGIN CHECK
+  // -----------------------------
   useEffect(() => {
     const u = localStorage.getItem("user");
     const accepted = localStorage.getItem("acceptedRules");
+
     if (!u) {
       navigate("/login");
       return;
     }
+
     if (!accepted) {
       navigate("/rules");
       return;
@@ -45,8 +51,8 @@ export default function Rooms() {
       const parsed = JSON.parse(u);
       const displayName =
         parsed.name || parsed.username || parsed.email?.split("@")[0];
+
       setUser({ ...parsed, displayName });
-      loadBookings();
     } catch (err) {
       console.error("Invalid user in localStorage:", err);
       localStorage.removeItem("user");
@@ -54,26 +60,35 @@ export default function Rooms() {
     }
   }, [navigate]);
 
-  // NOTE: use /api/bookings because your backend mounts bookingRoutes on /api/bookings
-  const loadBookings = async () => {
+  // -----------------------------
+  // LOAD BOOKINGS
+  // -----------------------------
+  const loadBookings = useCallback(async () => {
+    // don't call API until user is available
+    if (!user?._id) return;
+
     try {
       const res = await api.get(`/bookings/user/${user._id}`);
 
-      const data =
-        Array.isArray(res.data.bookings)
-          ? res.data.bookings
-          : [];
+      const data = Array.isArray(res.data?.bookings) ? res.data.bookings : [];
 
-      setBookings(data);
+      setBookedBeds(data);
     } catch (err) {
       console.error("Load bookings failed:", err);
-      setBookings([]);
+      setBookedBeds([]);
     }
-  };
+  }, [user]);
 
+  // Load bookings only AFTER user is ready
+  useEffect(() => {
+    if (user?._id) {
+      loadBookings();
+    }
+  }, [user, loadBookings]);
 
-
-  // Room structure
+  // -----------------------------
+  // ROOM STRUCTURE
+  // -----------------------------
   const roomStructure = useMemo(
     () => ({
       1: [2, 2, 3, 3, 2, 2],
@@ -96,15 +111,19 @@ export default function Rooms() {
 
   const toggleBed = (floor, room, bed) => {
     if (findBooking(floor, room, bed)) return alert("❌ Already booked!");
+
     const key = `${floor}-${room}-${bed}`;
+
     if (isSelected(floor, room, bed)) {
       setSelectedBeds((p) => p.filter((s) => s.key !== key));
       if (selectedBeds.length <= 1) setFormVisible(false);
       return;
     }
+
     if (selectedBeds.length >= 3)
       return alert("⚠️ Max 3 beds per booking allowed.");
-    setSelectedBeds((p) => [...p, { key, floor, room, bed }]);
+
+    setSelectedBeds((prev) => [...prev, { key, floor, room, bed }]);
     setFormVisible(true);
   };
 
@@ -124,7 +143,9 @@ export default function Rooms() {
     setShowPaymentInfo(true);
   };
 
-  // Auto calculate amount
+  // -----------------------------
+  // PRICE CALCULATION
+  // -----------------------------
   const computedBedAmount = useMemo(() => {
     let total = 0;
     for (const s of selectedBeds) {
@@ -135,10 +156,13 @@ export default function Rooms() {
   }, [selectedBeds, roomStructure]);
 
   const advance = 20000;
-  const finalAmount =
-    Number(bedAmountInput || computedBedAmount) + Number(advance || 0);
 
-  // Manual payment + Booking
+  const finalAmount =
+    Number(bedAmountInput || computedBedAmount) + Number(advance);
+
+  // -----------------------------
+  // PAYMENT + BOOKING
+  // -----------------------------
   const handlePayNow = async () => {
     try {
       if (!pendingBookingData) {
@@ -146,16 +170,14 @@ export default function Rooms() {
         return;
       }
 
-      const userId = user?._id || user?.id || user;
+      const userId = user?._id;
 
       let createdBookings = [];
 
-      // 1) Create booking(s)
       for (const bed of pendingBookingData.selectedBeds) {
         const data = new FormData();
 
-        // append all form fields
-        for (const [k, v] of Object.entries(pendingBookingData.formData || {})) {
+        for (const [k, v] of Object.entries(pendingBookingData.formData)) {
           if (v instanceof File) data.append(k, v);
           else data.append(k, String(v));
         }
@@ -166,7 +188,6 @@ export default function Rooms() {
         data.append("userId", userId);
         data.append("amountPaid", finalAmount);
 
-        // ⭐ FIXED URL (NO SECOND /api)
         const bookingRes = await api.post("/bookings", data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
@@ -179,13 +200,11 @@ export default function Rooms() {
         createdBookings.push(booking);
       }
 
-      if (createdBookings.length === 0) {
+      if (createdBookings.length === 0)
         return alert("No bookings created.");
-      }
 
       const firstBooking = createdBookings[0];
 
-      // 2) Save payment
       const payRes = await api.post("/payments/manual", {
         userId,
         bookingId: firstBooking._id,
@@ -197,30 +216,28 @@ export default function Rooms() {
         bedNumber: firstBooking.bed,
       });
 
-      if (!payRes.data?.success) {
+      if (!payRes.data?.success)
         return alert(payRes.data?.message || "Payment failed");
-      }
 
-      // SHOW SUCCESS POPUP (CONFETTI)
       setSuccessPopup(true);
-
-      // small delay to allow animation, then redirect to roomdetails
       setTimeout(() => {
         setSuccessPopup(false);
         navigate("/roomdetails");
       }, 2000);
-
     } catch (err) {
-      console.error("Booking error:", err.response?.data || err);
+      console.error("Booking error:", err);
       alert("Booking failed (see console)");
     }
   };
-
 
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/login");
   };
+
+  // -----------------------------
+  // UI
+  // -----------------------------
 
   return (
     <div className="container-fluid p-4 rooms-wrapper">
