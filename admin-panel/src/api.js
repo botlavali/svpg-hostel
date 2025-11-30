@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000", 
+  baseURL: "https://37ptgzfs-5000.inc1.devtunnels.ms/", 
 });
 
 export default api;

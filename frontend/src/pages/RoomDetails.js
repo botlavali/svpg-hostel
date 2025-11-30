@@ -1,5 +1,6 @@
 // frontend/src/pages/RoomDetails.js
-import React, { useEffect, useMemo, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import "../styles/RoomDetails.css";
@@ -166,7 +167,7 @@ Amount Paid: ₹${b.amountPaid || 0}
       clean = "uploads/" + clean;
     }
 
-    return `http://localhost:5000/${clean}`;
+    return `https://37ptgzfs-5000.inc1.devtunnels.ms/${clean}`;
   }
 
 

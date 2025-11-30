@@ -57,7 +57,7 @@ export default function Bookings() {
   const photoUrl = (p) => {
     if (!p) return "";
     if (p.startsWith("http")) return p;
-    return `http://localhost:5000/${p.replace(/\\/g, "/")}`;
+    return `https://37ptgzfs-5000.inc1.devtunnels.ms/${p.replace(/\\/g, "/")}`;
   };
 
   return (

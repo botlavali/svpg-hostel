@@ -193,7 +193,7 @@ export default function AdminRoomDetails() {
 
     if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
 
-    return `http://localhost:5000/${clean}`;
+    return `https://37ptgzfs-5000.inc1.devtunnels.ms/${clean}`;
   }
 
   return (

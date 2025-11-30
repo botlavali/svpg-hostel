@@ -33,11 +33,18 @@ app.use(
 );
 
 /* ----------------------------------------------------
-   CORS — Allow Frontend Access
+   CORS — FIXED (NO SYNTAX ERRORS)
+   IMPORTANT: Do not use trailing slash!
 ---------------------------------------------------- */
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: [
+      "https://37ptgzfs-3000.inc1.devtunnels.ms",
+      "https://37ptgzfs-3001.inc1.devtunnels.ms",  // Frontend tunnel
+      "https://37ptgzfs-5000.inc1.devtunnels.ms",  // Backend tunnel
+      "http://localhost:3001",                     // Local testing frontend
+      "http://localhost:3000"                      // Optional react dev
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
@@ -50,11 +57,8 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 /* ----------------------------------------------------
-   STATIC UPLOAD DIRECTORY — FINAL FIX
-   Multer saves files inside:
-   backend/routes/uploads/
+   STATIC UPLOAD DIRECTORY — FINAL WORKING CONFIG
 ---------------------------------------------------- */
-
 const uploadPath = path.join(__dirname, "routes/uploads");
 console.log("📁 Serving uploads from:", uploadPath);
 
@@ -78,12 +82,20 @@ app.get("/", (req, res) => {
 /* ----------------------------------------------------
    MONGODB CONNECTION
 ---------------------------------------------------- */
+/* ----------------------------------------------------
+   MONGODB CONNECTION  ⭐ FIXED ⭐
+---------------------------------------------------- */
 const MONGO_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT || 5000;
 
 async function connectDB() {
   try {
-    await mongoose.connect(MONGO_URL);
+    console.log("🔌 Connecting to MongoDB...");
+    console.log("🔗 URL:", MONGO_URL);
+
+    await mongoose.connect(MONGO_URL, {
+      serverSelectionTimeoutMS: 15000,
+    });
 
     console.log("📦 MongoDB Connected ✔");
 
@@ -91,10 +103,10 @@ async function connectDB() {
       console.log(`🚀 Server running → http://localhost:${PORT}`)
     );
   } catch (err) {
-    console.error("❌ MongoDB Error:", err.message);
-    console.log("Retrying in 5 seconds...");
+    console.error("❌ MongoDB CONNECTION ERROR:", err);  // FULL ERROR
+    console.log("⏳ Retrying in 5 sec...");
     setTimeout(connectDB, 5000);
   }
 }
-
 connectDB();
+

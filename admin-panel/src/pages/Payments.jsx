@@ -1,3 +1,4 @@
+// frontend/src/pages/Payments.jsx
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import "./payments.css";
@@ -18,6 +19,7 @@ export default function Payments() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        // backend returns grouped -> array of { userId, userName, phone, payments: [], totalAmount }
         const data = res.data.grouped || [];
 
         setUsersPayments(data);
@@ -30,18 +32,63 @@ export default function Payments() {
     load();
   }, []);
 
-  // Search filter
-  const handleSearch = (value) => {
+  // DELETE payment function
+  const deletePayment = async (paymentId) => {
+    if (!window.confirm("Delete this payment?")) return;
+
+    try {
+      const token = localStorage.getItem("adminToken");
+
+      const res = await api.delete(`/payments/${paymentId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Delete failed");
+      }
+
+      // Remove payment from local state
+      const refreshed = usersPayments.map((u) => {
+        const newPayments = (u.payments || []).filter((p) => p._id !== paymentId);
+        const newTotal = newPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+
+        return {
+          ...u,
+          payments: newPayments,
+          totalAmount: newTotal,
+        };
+      }).filter(u => (u.payments || []).length > 0); // optionally remove users with no payments
+
+      setUsersPayments(refreshed);
+
+      // Re-apply search filter so UI stays consistent
+      if (!search.trim()) {
+        setFiltered(refreshed);
+      } else {
+        handleSearch(search, refreshed);
+      }
+
+      alert("Payment deleted");
+    } catch (err) {
+      console.error("Payment Delete Error:", err);
+      alert(err.response?.data?.message || err.message || "Failed to delete");
+    }
+  };
+
+  // Search filter, accepts optional source list
+  const handleSearch = (value, source = null) => {
     setSearch(value);
 
-    if (!value.trim()) return setFiltered(usersPayments);
+    const listToFilter = source || usersPayments;
+
+    if (!value.trim()) return setFiltered(listToFilter);
 
     const s = value.toLowerCase();
 
-    const result = usersPayments.filter(
+    const result = listToFilter.filter(
       (u) =>
-        u.userName.toLowerCase().includes(s) ||
-        u.phone.includes(s)
+        (u.userName || "").toLowerCase().includes(s) ||
+        (u.phone || "").toLowerCase().includes(s)
     );
 
     setFiltered(result);
@@ -49,7 +96,6 @@ export default function Payments() {
 
   return (
     <div className="payments-wrapper">
-
       {/* HEADER */}
       <div className="payments-header">
         <h2 className="fw-bold">💳 Payments</h2>
@@ -72,7 +118,6 @@ export default function Payments() {
         {filtered.map((user) => (
           <div className="col-md-6 col-lg-4" key={user.userId}>
             <div className="user-box">
-
               {/* USER HEADER */}
               <div className="user-title">
                 {user.userName}
@@ -85,7 +130,7 @@ export default function Payments() {
 
               {/* PAYMENTS LIST */}
               <div className="payments-scroll-area">
-                {user.payments.map((p) => {
+                {(user.payments || []).map((p) => {
                   const b = p.bookingId;
 
                   // Room & Bed formatting
@@ -96,7 +141,6 @@ export default function Payments() {
 
                   return (
                     <div key={p._id} className="payment-inner-box">
-
                       <div className="pay-amount">
                         ₹{p.amount}
                         <span className="pay-status">PAID</span>
@@ -126,7 +170,10 @@ export default function Payments() {
                         {new Date(p.createdAt).toLocaleString()}
                       </div>
 
-                      <button className="delete-btn">
+                      <button
+                        className="delete-btn"
+                        onClick={() => deletePayment(p._id)}
+                      >
                         🗑 Delete Payment
                       </button>
                     </div>
@@ -141,7 +188,6 @@ export default function Payments() {
                 <span>Total Paid:</span>
                 <strong>₹{user.totalAmount}</strong>
               </div>
-
             </div>
           </div>
         ))}
