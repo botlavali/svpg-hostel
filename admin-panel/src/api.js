@@ -1,8 +1,8 @@
+// frontend/src/api.js
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://mohansvpg-backend.onrender.com", // Render backend URL
-  withCredentials: true,
+  baseURL: "http://localhost:5000", 
 });
 
 export default api;

@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
     const axiosAuth = useMemo(() => createAxiosWithToken(token), [token]);
 
     async function login({ email, password }) {
-        const resp = await axios.post(`${API_BASE}/api/admin/login`, { email, password });
+        const resp = await axios.post(`${API_BASE}/admin/login`, { email, password });
         const { token: t, user: u } = resp.data;
         setToken(t);
         setUser(u || null);
@@ -55,7 +55,7 @@ export function AuthProvider({ children }) {
     // optional: refresh user from server
     async function fetchProfile() {
         if (!token) return null;
-        const resp = await axiosAuth.get('/api/admin/me');
+        const resp = await axiosAuth.get('/admin/me');
         setUser(resp.data);
         return resp.data;
     }

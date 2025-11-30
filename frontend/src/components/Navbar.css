@@ -1,35 +1,111 @@
-.navbar {
-  font-family: "Segoe UI", Arial, sans-serif;
-  transition: all 0.3s ease;
+/* ============================
+      NAVBAR BASE
+============================ */
+.custom-nav {
+  background: #0d1117;
+  padding: 10px 15px;
+  transition: background 0.4s ease;
 }
 
-.navbar-brand img {
-  transition: transform 0.3s ease;
+.custom-nav:hover {
+  background: #0f1523;
 }
 
-.navbar-brand:hover img {
-  transform: scale(1.1);
+/* ============================
+      LOGO HOVER EFFECT
+============================ */
+.nav-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  transition: 0.3s ease;
 }
 
+.nav-logo:hover {
+  transform: scale(1.15) rotate(3deg);
+  box-shadow: 0 0 12px rgba(255, 165, 0, 0.7);
+}
+
+/* ============================
+      NAV LINKS + UNDERLINE
+============================ */
 .nav-link {
-  color: white !important;
+  color: #ddd !important;
   font-weight: 500;
-  transition: color 0.3s ease, background 0.3s ease;
+  padding: 6px 12px !important;
+  transition: color 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Underline animation */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0px;
+  width: 0%;
+  height: 2px;
+  background: #ffa500;
+  transition: width 0.3s ease-in-out;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
 }
 
 .nav-link:hover,
 .nav-link.active {
-  color: #ffd700 !important;
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  padding: 6px 15px;
+  color: #ffa500 !important;
 }
 
-.btn-outline-light:hover {
-  background-color: white !important;
-  color: #0d6efd !important;
+/* ============================
+      USER INITIAL CIRCLE
+============================ */
+.user-circle {
+  width: 38px;
+  height: 38px;
+  background: #ffa500;
+  color: #000;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid white;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
-.navbar-toggler {
-  border: none !important;
+.user-circle:hover {
+  background: #ffbf47;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 165, 0, 0.8);
+}
+
+/* ============================
+      MOBILE NAV COLLAPSE
+============================ */
+@media (max-width: 991px) {
+  .navbar-collapse {
+    background: #111827;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    animation: fadeSlide 0.3s ease;
+  }
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

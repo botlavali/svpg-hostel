@@ -1,81 +1,81 @@
-🌈 Background Gradient
-.welcome-container {
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb, #e1f5fe);
-  overflow: hidden;
+/* FULL SCREEN BACKGROUND WITH BLUR */
+.home-container {
   min-height: 100vh;
-}
-
-/* 🌀 Animated Logo Circle */
-.logo-wrapper {
+  width: 100%;
+  background: #0d1117;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  backdrop-filter: blur(6px);
+  padding: 20px;
 }
 
-.logo-circle {
+
+.logo-wrapper {
+  animation: shrinkLogo 3s ease forwards;
+}
+
+
+.main-logo {
   width: 200px;
   height: 200px;
+
   border-radius: 50%;
-  font-size: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  transition: all 1.2s ease-in-out;
+
+  object-fit: cover;
+
+  border: 4px solid rgba(255, 255, 255, 0.4);
+
+  filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.5));
+  background: #000;
+
 }
 
-.logo-circle.shrink {
-  width: 100px;
-  height: 100px;
-  font-size: 2rem;
-  transform: translateY(-10px);
-}
-
-/* ✨ Smooth Fade-in */
-.transition-fade {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 1s ease-in-out;
-}
-
-.transition-fade.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* 🌟 Text Effects */
-.fade-in-text {
-  animation: fadeIn 1.5s ease forwards;
-}
-
-.fade-in-btn {
-  animation: fadeInUp 2s ease forwards;
-}
-
-@keyframes fadeIn {
-  from {
+@keyframes shrinkLogo {
+  0% {
+    transform: scale(1.4);
     opacity: 0;
-    transform: translateY(20px);
   }
-  to {
+
+  60% {
     opacity: 1;
-    transform: translateY(0);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+
+/* TEXT */
+.title {
+  margin-top: 25px;
+  font-size: 2.6rem;
+  font-weight: bold;
+  color: #ffffff;
 }
 
-/* 💅 Optional: Add subtle hover for button */
-.btn-primary:hover {
-  background-color: #0b5ed7 !important;
-  transform: scale(1.05);
-  transition: all 0.3s ease;
+.subtitle {
+  font-size: 1.2rem;
+  color: #e0e0e0;
+  max-width: 550px;
+  margin-bottom: 30px;
+}
+
+/* BUTTON */
+.start-btn {
+  padding: 12px 30px;
+  font-size: 1.3rem;
+  border-radius: 40px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  transition: 0.3s;
+}
+
+.start-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }

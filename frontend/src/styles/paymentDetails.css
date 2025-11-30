@@ -1,0 +1,118 @@
+/* ===============================
+    PAGE WRAPPER (Isolated Area)
+================================*/
+.payment-page-wrapper {
+  background: #0d1117;/* PURE BLACK BACKGROUND */
+  min-height: 100vh;
+  padding-top: 20px;
+  padding-bottom: 40px;
+}
+
+/* Transparent blur container */
+.payment-page {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding-bottom: 30px;
+}
+
+/* ===============================
+    TITLE
+================================*/
+.page-title {
+  color: #4cc9f0;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* ===============================
+    BUTTONS
+================================*/
+.logout-btn {
+  border-radius: 30px;
+  padding: 6px 18px;
+}
+
+.export-btn {
+  background: #4cc9f0;
+  color: #ffffff;
+  border-radius: 30px;
+  padding: 6px 18px;
+  font-weight: bold;
+  border: none;
+  transition: 0.3s ease;
+}
+
+.export-btn:hover {
+  transform: scale(1.05);
+  background: #2aa7df;
+}
+
+/* ===============================
+    LOADING / EMPTY TEXT
+================================*/
+.loading-text,
+.no-payment {
+  text-align: center;
+  color: #ffffff;
+  font-size: 1.1rem;
+}
+
+/* ===============================
+    PAYMENT GLASS CARD
+================================*/
+.glass-card {
+  background: rgba(255, 255, 255, 0.12);  /* Slight White Blur */
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 18px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 18px;
+  transition: 0.35s ease;
+  color: #ffffff;     /* TEXT WHITE */
+}
+
+/* Hover effect */
+.glass-card:hover {
+  transform: translateY(-7px);
+  border-color: #4cc9f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* ===============================
+    AMOUNT & DATE
+================================*/
+.amount {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #32e66a; /* neon green */
+}
+
+.date {
+  font-size: 0.85rem;
+  color: #e2e8f0; /* light grey */
+}
+
+/* ===============================
+    BADGE
+================================*/
+.status-badge {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  border-radius: 10px;
+}
+
+/* ===============================
+    RECEIPT BUTTON
+================================*/
+.receipt-btn {
+  border-radius: 22px;
+  background: #4361ee;
+  color: white !important;
+  transition: 0.3s ease;
+}
+
+.receipt-btn:hover {
+  background: #3a4fd0;
+  transform: scale(1.05);
+}

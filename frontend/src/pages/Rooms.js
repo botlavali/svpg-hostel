@@ -26,6 +26,7 @@ export default function Rooms() {
 
   const [bedAmountInput, setBedAmountInput] = useState("");
   const [confirmCode, setConfirmCode] = useState("");
+  const [successPopup, setSuccessPopup] = useState(false);
 
   // Check login & rules before loading
   useEffect(() => {
@@ -56,16 +57,21 @@ export default function Rooms() {
   // NOTE: use /api/bookings because your backend mounts bookingRoutes on /api/bookings
   const loadBookings = async () => {
     try {
-      const res = await api.get("/bookings");
-      // backend returns either array or { success: true, data: [...] } — handle both
-      const payload = res.data?.success && res.data?.data ? res.data.data : res.data;
-      setBookedBeds(payload || []);
+      const res = await api.get(`/bookings/user/${user._id}`);
+
+      const data =
+        Array.isArray(res.data.bookings)
+          ? res.data.bookings
+          : [];
+
+      setBookings(data);
     } catch (err) {
-      console.error("Failed to fetch bookings:", err);
-      // keep bookedBeds empty
-      setBookedBeds([]);
+      console.error("Load bookings failed:", err);
+      setBookings([]);
     }
   };
+
+
 
   // Room structure
   const roomStructure = useMemo(
@@ -133,76 +139,82 @@ export default function Rooms() {
     Number(bedAmountInput || computedBedAmount) + Number(advance || 0);
 
   // Manual payment + Booking
- const handlePayNow = async () => {
-  try {
-    if (!pendingBookingData) {
-      alert("No booking data available.");
-      return;
-    }
-
-    const userId = user?._id || user?.id || user;
-
-    let createdBookings = [];
-
-    // 1) Create booking(s)
-    for (const bed of pendingBookingData.selectedBeds) {
-      const data = new FormData();
-
-      // append all form fields
-      for (const [k, v] of Object.entries(pendingBookingData.formData || {})) {
-        if (v instanceof File) data.append(k, v);
-        else data.append(k, String(v));
+  const handlePayNow = async () => {
+    try {
+      if (!pendingBookingData) {
+        alert("No booking data available.");
+        return;
       }
 
-      data.append("floor", bed.floor);
-      data.append("room", bed.room);
-      data.append("bed", bed.bed);
-      data.append("userId", userId);
-      data.append("amountPaid", finalAmount);
+      const userId = user?._id || user?.id || user;
 
-      // ⭐ FIXED URL (NO SECOND /api)
-      const bookingRes = await api.post("/bookings", data, {
-        headers: { "Content-Type": "multipart/form-data" },
+      let createdBookings = [];
+
+      // 1) Create booking(s)
+      for (const bed of pendingBookingData.selectedBeds) {
+        const data = new FormData();
+
+        // append all form fields
+        for (const [k, v] of Object.entries(pendingBookingData.formData || {})) {
+          if (v instanceof File) data.append(k, v);
+          else data.append(k, String(v));
+        }
+
+        data.append("floor", bed.floor);
+        data.append("room", bed.room);
+        data.append("bed", bed.bed);
+        data.append("userId", userId);
+        data.append("amountPaid", finalAmount);
+
+        // ⭐ FIXED URL (NO SECOND /api)
+        const bookingRes = await api.post("/bookings", data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        const booking =
+          bookingRes.data?.booking ||
+          bookingRes.data?.data ||
+          bookingRes.data;
+
+        createdBookings.push(booking);
+      }
+
+      if (createdBookings.length === 0) {
+        return alert("No bookings created.");
+      }
+
+      const firstBooking = createdBookings[0];
+
+      // 2) Save payment
+      const payRes = await api.post("/payments/manual", {
+        userId,
+        bookingId: firstBooking._id,
+        amount: finalAmount,
+        code: confirmCode,
+        name: formData.name,
+        phone: formData.phone,
+        roomNumber: `${firstBooking.floor}${String(firstBooking.room).padStart(2, "0")}`,
+        bedNumber: firstBooking.bed,
       });
 
-      const booking =
-        bookingRes.data?.booking ||
-        bookingRes.data?.data ||
-        bookingRes.data;
+      if (!payRes.data?.success) {
+        return alert(payRes.data?.message || "Payment failed");
+      }
 
-      createdBookings.push(booking);
+      // SHOW SUCCESS POPUP (CONFETTI)
+      setSuccessPopup(true);
+
+      // small delay to allow animation, then redirect to roomdetails
+      setTimeout(() => {
+        setSuccessPopup(false);
+        navigate("/roomdetails");
+      }, 2000);
+
+    } catch (err) {
+      console.error("Booking error:", err.response?.data || err);
+      alert("Booking failed (see console)");
     }
-
-    if (createdBookings.length === 0) {
-      return alert("No bookings created.");
-    }
-
-    const firstBooking = createdBookings[0];
-
-    // 2) Save payment
-    const payRes = await api.post("/payments/manual", {
-      userId,
-      bookingId: firstBooking._id,
-      amount: finalAmount,
-      code: confirmCode,
-      name: formData.name,
-      phone: formData.phone,
-      roomNumber: `${firstBooking.floor}${String(firstBooking.room).padStart(2, "0")}`,
-      bedNumber: firstBooking.bed,
-    });
-
-    if (!payRes.data?.success) {
-      return alert(payRes.data?.message || "Payment failed");
-    }
-
-    alert("Booking + Payment Successful!");
-    navigate("/roomdetails");
-
-  } catch (err) {
-    console.error("Booking error:", err.response?.data || err);
-    alert("Booking failed (see console)");
-  }
-};
+  };
 
 
   const handleLogout = () => {
@@ -211,20 +223,20 @@ export default function Rooms() {
   };
 
   return (
-    <div className="container-fluid p-4">
+    <div className="container-fluid p-4 rooms-wrapper">
       <div className="row">
         {/* Sidebar */}
         <aside className="col-12 col-md-3 col-lg-2 mb-4">
           {user ? (
-            <div className="card shadow-sm p-3 text-center h-100">
+            <div className="card shadow-sm p-3 text-center h-100 sidebar-card">
               <div
-                className="mx-auto rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mb-3"
+                className="mx-auto profile-circle d-flex align-items-center justify-content-center mb-3"
                 style={{ width: 80, height: 80, fontSize: 28 }}
               >
                 {user.displayName?.[0]?.toUpperCase() || "U"}
               </div>
               <h6 className="text-secondary mb-1">Welcome</h6>
-              <p className="fw-bold text-primary mb-3">{user.displayName}</p>
+              <p className="fw-bold mb-3">{user.displayName}</p>
               <div className="d-grid gap-2">
                 <button
                   className="btn btn-outline-primary"
@@ -247,11 +259,11 @@ export default function Rooms() {
 
         {/* Main Section */}
         <main className="col-12 col-md-9 col-lg-10">
-          <h2 className="mb-3">🏠 S.V PG Hostel Gents — Beds Booking</h2>
+          <h2 className="mb-3 page-title">🏠 S.V PG Hostel Gents — Beds Booking</h2>
 
           {Object.entries(roomStructure).map(([floor, rooms]) => (
             <section key={floor} className="mb-4">
-              <h5 className="fw-bold mb-3">Floor {floor}</h5>
+              <h5 className="fw-bold mb-3 floor-title">Floor {floor}</h5>
               <div className="row g-3">
                 {rooms.map((bedsPerRoom, rIdx) => {
                   const roomIndex = rIdx + 1;
@@ -260,7 +272,7 @@ export default function Rooms() {
                     <div key={roomIndex} className="col-12 col-md-4 col-lg-2">
                       <div className="card shadow-sm border-0 room-card">
                         <div className="card-body text-center">
-                          <h6 className="text-secondary">Room {roomNo}</h6>
+                          <h6 className="mb-2">Room {roomNo}</h6>
                           <div className="mb-2">
                             <span className="badge bg-light text-dark border">
                               {bedsPerRoom === 2 ? "₹11,000/bed" : "₹9,000/bed"}
@@ -368,7 +380,7 @@ export default function Rooms() {
                   <div className="modal-body">
                     <p>2-bed → ₹11,000 | 3-bed → ₹9,000</p>
                     <p className="fw-bold text-primary">Advance ₹{advance} | Beds: {selectedBeds.length}</p>
-                    <div className="p-2 rounded bg-light">
+                    <div className="p-2 rounded bg-light text-dark">
                       <div className="d-flex justify-content-between">
                         <span>Bed total:</span>
                         <span>₹{computedBedAmount}</span>
@@ -395,8 +407,27 @@ export default function Rooms() {
               </div>
             </div>
           )}
+
         </main>
       </div>
+
+      {/* SUCCESS CONFETTI POPUP */}
+      {successPopup && (
+        <div className="success-overlay">
+          <div className="success-popup glass">
+            <div className="success-icon">✅</div>
+            <h3>Booking Successful!</h3>
+            <p className="muted">Thanks — redirecting to My Bookings...</p>
+          </div>
+
+          <div className="confetti-layer" aria-hidden>
+            {/* many confetti pieces created visually by CSS */}
+            {Array.from({ length: 24 }).map((_, i) => (
+              <span key={i} className={`confetti c${(i % 6) + 1}`} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

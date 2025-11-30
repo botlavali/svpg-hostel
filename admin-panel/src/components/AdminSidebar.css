@@ -1,0 +1,94 @@
+/* Sidebar Container */
+.sidebar-container {
+  width: 240px;
+  height: 100vh;
+  padding: 25px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  /* Black Blur Glass */
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+
+  color: white;
+}
+
+/* Title */
+.sidebar-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 22px;
+  color: white;
+  margin-bottom: 30px;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+/* Menu Links */
+.sidebar-menu {
+  flex: 1;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+
+  color: white;
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: 500;
+
+  border-radius: 10px;
+  transition: 0.3s ease;
+}
+
+/* Hover Effect */
+.sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateX(6px);
+}
+
+/* Active Menu */
+.sidebar-link.active {
+  background: rgba(255, 255, 255, 0.28);
+  font-weight: 700;
+  transform: translateX(6px);
+}
+
+/* Divider */
+.sidebar-divider {
+  border-color: rgba(255, 255, 255, 0.2);
+  margin: 15px 0;
+}
+
+/* Footer */
+.sidebar-footer {
+  text-align: center;
+}
+
+.admin-name {
+  margin: 0;
+  opacity: 0.8;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+/* Logout Button */
+.logout-btn {
+  background: #ff4d4d;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.logout-btn:hover {
+  background: #ff2b2b;
+  transform: scale(1.05);
+}

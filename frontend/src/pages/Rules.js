@@ -34,7 +34,7 @@ export default function Rules() {
 
         <div className="food-timing">
           <h5 className="mt-4 mb-3">🍴 Food Timings</h5>
-          <p>Breakfast: <b>7:30 AM – 9:00 AM</b></p>
+          <p>Breakfast: <b>7:00 AM – 9:00 AM</b></p>
           <p>Lunch: <b>1:00 PM – 2:00 PM</b></p>
           <p>Dinner: <b>7:30 PM – 9:00 PM</b></p>
         </div>

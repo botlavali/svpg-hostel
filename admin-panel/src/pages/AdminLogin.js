@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import api from "../api";
 import { useNavigate } from "react-router-dom";
+import api from "../api";
+import "./adminLogin.css";  // <-- IMPORTANT
 
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -35,43 +36,21 @@ export default function AdminLogin() {
   };
 
   return (
-    <div
-      className="d-flex justify-content-center align-items-center"
-      style={{
-        height: "100vh",
-        background: "linear-gradient(135deg, #0d6efd, #6610f2)",
-      }}
-    >
-      <div className="card shadow-lg p-4" style={{ width: "380px", borderRadius: "12px" }}>
-        
-        <div className="text-center mb-3">
-          <div
-            style={{
-              width: 70,
-              height: 70,
-              borderRadius: "50%",
-              background: "#0d6efd",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              fontSize: 32,
-              color: "white",
-              margin: "0 auto 10px auto",
-            }}
-          >
-            👑
-          </div>
-          <h4 className="fw-bold">Admin Login</h4>
-          <p className="text-muted">Access the SV PG Admin Panel</p>
+    <div className="login-bg">
+
+      <div className="login-card glass-box">
+
+        <div className="login-header">
+          <div className="login-icon">👑</div>
+          <h2>Admin Login</h2>
+          <p>Access the SV PG Admin Panel</p>
         </div>
 
-        {err && (
-          <div className="alert alert-danger py-2 text-center">{err}</div>
-        )}
+        {err && <div className="error-box">{err}</div>}
 
         <form onSubmit={submit}>
           <input
-            className="form-control mb-3"
+            className="input-box"
             name="email"
             value={form.email}
             onChange={handle}
@@ -80,7 +59,7 @@ export default function AdminLogin() {
           />
 
           <input
-            className="form-control mb-3"
+            className="input-box"
             type="password"
             name="password"
             value={form.password}
@@ -89,15 +68,13 @@ export default function AdminLogin() {
             required
           />
 
-          <button
-            className="btn btn-primary w-100 py-2 fw-bold"
-            disabled={loading}
-          >
+          <button className="login-btn" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
       </div>
+
     </div>
   );
 }

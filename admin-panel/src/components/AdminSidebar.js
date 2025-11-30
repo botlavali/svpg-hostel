@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import "./AdminSidebar.css"; // IMPORTANT
 
 export default function AdminSidebar({ onClose }) {
   const navigate = useNavigate();
@@ -12,49 +13,44 @@ export default function AdminSidebar({ onClose }) {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h4 className="fw-bold text-center mb-4 text-white" onClick={onClose}>
+    <div className="sidebar-container glass-sidebar">
+
+      <h3 className="sidebar-title" onClick={onClose}>
         SV PG Admin
-      </h4>
+      </h3>
 
-      <NavLink className="admin-link" to="/admin/dashboard" onClick={onClose}>
-        📊 Dashboard
-      </NavLink>
+      <div className="sidebar-menu">
+        <NavLink className="sidebar-link" to="/admin/dashboard" onClick={onClose}>
+          📊 Dashboard
+        </NavLink>
+        <NavLink className="sidebar-link" to="/admin/rooms">
+          🛏 Rooms
+        </NavLink>
 
-      <NavLink className="admin-link" to="/admin/bookings" onClick={onClose}>
-        📘 Bookings
-      </NavLink>
+        <NavLink className="sidebar-link" to="/admin/roomdetails">
+          Room Details
+        </NavLink>
 
-      <NavLink className="admin-link" to="/admin/payments" onClick={onClose}>
-        💳 Payments
-      </NavLink>
 
-      <hr style={{ borderColor: "rgba(255,255,255,0.3)" }} />
 
-      <div className="text-center mt-4 text-white">
-        <div className="mb-2">👑 {admin?.name || "Admin"}</div>
-        <button className="btn btn-danger btn-sm" onClick={logout}>
+        <NavLink className="sidebar-link" to="/admin/bookings" onClick={onClose}>
+          📘 Bookings
+        </NavLink>
+
+        <NavLink className="sidebar-link" to="/admin/payments" onClick={onClose}>
+          💳 Payments
+        </NavLink>
+      </div>
+
+      <hr className="sidebar-divider" />
+
+      <div className="sidebar-footer">
+        <p className="admin-name">👑 {admin?.name || "Admin"}</p>
+        <button className="logout-btn" onClick={logout}>
           Logout
         </button>
       </div>
 
-      <style>{`
-        .admin-link {
-          display: block;
-          padding: 12px;
-          color: white;
-          text-decoration: none;
-          margin-bottom: 10px;
-          border-radius: 5px;
-          font-size: 17px;
-        }
-        .admin-link:hover {
-          background: rgba(255,255,255,0.2);
-        }
-        .admin-link.active {
-          background: rgba(255,255,255,0.3);
-        }
-      `}</style>
     </div>
   );
 }

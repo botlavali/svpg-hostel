@@ -16,11 +16,19 @@ router.post("/login", (req, res) => {
   const ADMIN_EMAIL = "mohansvpg@gmail.com";
   const ADMIN_PASSWORD = "Mohansvpg123";
 
-  if (email !== ADMIN_EMAIL)
-    return res.status(400).json({ success: false, message: "Admin not found" });
+  if (email !== ADMIN_EMAIL) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "Admin not found" 
+    });
+  }
 
-  if (password !== ADMIN_PASSWORD)
-    return res.status(400).json({ success: false, message: "Incorrect password" });
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "Incorrect password" 
+    });
+  }
 
   const token = jwt.sign(
     { id: "ADMIN", role: "admin" },
@@ -28,7 +36,7 @@ router.post("/login", (req, res) => {
     { expiresIn: "7d" }
   );
 
-  res.json({
+  return res.json({
     success: true,
     message: "Admin login success",
     token,
@@ -41,19 +49,23 @@ router.post("/login", (req, res) => {
 --------------------------------------- */
 function adminAuth(req, res, next) {
   const header = req.headers.authorization || "";
-  if (!header.startsWith("Bearer "))
+
+  if (!header.startsWith("Bearer ")) {
     return res.status(401).json({ message: "Unauthorized" });
+  }
 
   try {
     const token = header.split(" ")[1];
     jwt.verify(token, process.env.ADMIN_JWT_SECRET || "AdminSecretKey");
-    next();
+    return next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });
   }
-}/* ----------------------------------
-   ADMIN PAYMENT LIST
------------------------------------- */
+}
+
+/* --------------------------------------
+       PAYMENTS LIST
+--------------------------------------- */
 router.get("/payments", adminAuth, async (req, res) => {
   try {
     const payments = await Payment.find()
@@ -68,9 +80,8 @@ router.get("/payments", adminAuth, async (req, res) => {
   }
 });
 
-
 /* --------------------------------------
-    DASHBOARD STATS
+       DASHBOARD OVERVIEW
 --------------------------------------- */
 router.get("/overview", adminAuth, async (req, res) => {
   try {
@@ -93,7 +104,7 @@ router.get("/overview", adminAuth, async (req, res) => {
     });
   } catch (err) {
     console.error("Overview Error:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 

@@ -1,0 +1,72 @@
+/* Full page background */
+.dash-bg {
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  min-height: 100vh;
+  color: white;
+  padding: 20px;
+}
+
+/* Glass-box */
+.glass-box {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: 0.3s;
+}
+
+.glass-box:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-4px);
+}
+
+/* Header */
+.dash-header h2 {
+  font-weight: 700;
+  color: #fff;
+}
+
+.dash-header p {
+  opacity: 0.8;
+}
+
+/* Cards */
+.dash-card {
+  padding: 20px;
+  border-radius: 14px;
+  text-align: left;
+  transition: 0.3s;
+}
+
+.dash-card:hover {
+  transform: scale(1.03);
+}
+
+/* Icon */
+.dash-icon {
+  font-size: 40px;
+  opacity: 0.9;
+  margin-bottom: 10px;
+}
+
+/* Title */
+.dash-title {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Value */
+.dash-value {
+  font-size: 26px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+/* Tooltip override */
+.recharts-default-tooltip {
+  background: black !important;
+  color: white !important;
+  border-radius: 8px;
+}

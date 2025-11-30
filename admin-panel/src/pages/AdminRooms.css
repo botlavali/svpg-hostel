@@ -1,0 +1,185 @@
+/* MAIN WRAPPER */
+.admin-rooms-container {
+  background: #000;
+  min-height: 100vh;
+  padding: 20px;
+  color: #fff;
+}
+
+.page-title {
+  font-size: 30px;
+  font-weight: bold;
+  color: #00eaff;
+  text-shadow: 0 0 12px #00eaff;
+}
+
+/* FLOOR TITLE */
+.floor-title {
+  margin-top: 25px;
+  font-size: 20px;
+  padding-left: 10px;
+  border-left: 4px solid #00eaff;
+}
+
+/* ROOMS GRID */
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+/* ROOM CARD */
+.room-card {
+  background: #111;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid #222;
+  transition: 0.3s;
+}
+
+.room-card:hover {
+  border-color: #00eaff;
+  box-shadow: 0 0 15px #00eaff66;
+}
+
+.room-title {
+  color: #00eaff;
+  font-weight: 600;
+}
+
+/* BED GRID */
+.bed-grid {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* BED BUTTON */
+.bed-btn {
+  background: #222;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.bed-btn:hover {
+  background: #00eaff;
+  color: #000;
+  transform: scale(1.08);
+}
+
+.bed-btn.booked {
+  background: #550000;
+  border-color: #aa0000;
+  cursor: not-allowed;
+}
+
+/* FORM */
+.dark-form {
+  background: #111;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px #00eaff33;
+}
+
+.form-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #00eaff;
+  margin-bottom: 15px;
+}
+
+.form-grid {
+  display: grid;
+  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.dark-form input {
+  background: #000;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.submit-btn {
+  margin-top: 15px;
+  background: #00eaff;
+  color: #000;
+  padding: 12px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.submit-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #00eaff;
+}
+
+/* PAYMENT MODAL */
+.dark-modal {
+  position: fixed;
+  inset: 0;
+  background: #000a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-card {
+  background: #111;
+  padding: 25px;
+  width: 350px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 20px #00eaff55;
+}
+
+.modal-amount {
+  font-size: 20px;
+  color: #00eaff;
+  margin-bottom: 10px;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 10px;
+  background: #000;
+  border: 1px solid #333;
+  color: #fff;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.pay-btn {
+  background: #00eaff;
+  color: #000;
+  padding: 12px;
+  width: 100%;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  transition: 0.3s;
+}
+
+.pay-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #00eaff;
+}
+
+.cancel-btn {
+  background: #333;
+  color: #fff;
+  padding: 10px;
+  width: 100%;
+  border-radius: 8px;
+}

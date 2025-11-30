@@ -7,16 +7,30 @@ import "../styles/RoomDetails.css";
 export default function RoomDetails() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
+
   const [bookings, setBookings] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [shiftModal, setShiftModal] = useState({ open: false, booking: null, available: {} });
-  const [payModal, setPayModal] = useState({ open: false, booking: null, amount: 0, code: "" });
+  const [payModal, setPayModal] = useState({
+    open: false,
+    booking: null,
+    amount: 0,
+    code: "",
+  });
 
-  const [updateModal, setUpdateModal] = useState({ open: false, booking: null });
-  const [receiptModal, setReceiptModal] = useState({ open: false, booking: null });
+  const [updateModal, setUpdateModal] = useState({
+    open: false,
+    booking: null,
+  });
 
-  // room structure (keeps parity with backend)
+  const [receiptModal, setReceiptModal] = useState({
+    open: false,
+    booking: null,
+  });
+
+  const ADVANCE = 20000;
+
+  // Room layout
   const roomStructure = useMemo(
     () => ({
       1: [2, 2, 3, 3, 2, 2],
@@ -30,99 +44,48 @@ export default function RoomDetails() {
   );
 
   // Load bookings
-// Load bookings
-const loadBookings = useCallback(async () => {
-  try {
-    const res = await api.get("/bookings"); // CORRECT (api adds /api)
-    setBookings(res.data || []);
-  } catch (err) {
-    console.error("Load bookings failed:", err);
-  }
-}, []);
-
+  const loadBookings = useCallback(async () => {
+    try {
+      if (!user?._id) return;
+      const res = await api.get(`/bookings/user/${user._id}`);
+      const payload = Array.isArray(res.data)
+        ? res.data
+        : res.data?.bookings || res.data?.data || [];
+      setBookings(payload);
+    } catch (err) {
+      console.error("Load bookings failed:", err);
+      setBookings([]);
+    }
+  }, [user?._id]);
 
   useEffect(() => {
-    if (!user) return navigate("/login");
+    if (!user) {
+      navigate("/login");
+      return;
+    }
     loadBookings();
-  }, [navigate, user, loadBookings]);
+  }, [user, navigate, loadBookings]);
 
-  // Monthly rent based on sharing
-  function getMonthlyRent(b) {
-    if (!b) return 0;
-    if (b.sharing === 2) return 11000;
-    if (b.sharing === 3) return 9000;
-    return 9000;
-  }
+  // Rent helper
+  const getMonthlyRent = (b) =>
+    roomStructure[b.floor][b.room - 1] === 2 ? 11000 : 9000;
 
-  // -----------------------------
-  // SHIFT BED
-  // -----------------------------
-  const fetchAvailableBeds = async (floor, room) => {
-    try {
-      const res = await api.get("/bookings/available", { params: { floor, room } });
-      // res.data.available should be array of available bed numbers
-      return res.data.available || [];
-    } catch (err) {
-      console.error("Fetch available beds failed:", err);
-      return [];
-    }
-  };
-
-  const openShiftModal = async (booking) => {
-    const available = {};
-    try {
-      for (const [floor, rooms] of Object.entries(roomStructure)) {
-        available[floor] = {};
-        for (let i = 0; i < rooms.length; i++) {
-          const roomNo = i + 1;
-          available[floor][roomNo] = await fetchAvailableBeds(floor, roomNo);
-        }
-      }
-      setShiftModal({ open: true, booking, available });
-    } catch (err) {
-      console.error("Open shift modal error:", err);
-    }
-  };
-
-  async function confirmShift(target) {
-    try {
-      const res = await api.post("/bookings/shift", {
-        bookingId: shiftModal.booking._id,
-        toFloor: target.floor,
-        toRoom: target.room,
-        toBed: target.bed,
-      });
-
-      if (res.data && res.data.success) {
-        alert("Shift successful");
-        setShiftModal({ open: false, booking: null, available: {} });
-        await loadBookings();
-      } else {
-        alert(res.data?.message || "Shift failed");
-      }
-    } catch (err) {
-      console.error("Shift error:", err);
-      alert(err?.response?.data?.message || "Shift failed");
-    }
-  }
-
-  // -----------------------------
-  // PAY NEXT MONTH (always available)
-  // -----------------------------
+  // Payment Modal Open
   const openPayModal = (booking) => {
+    const correctSharing = roomStructure[booking.floor][booking.room - 1];
     setPayModal({
       open: true,
-      booking,
-      amount: getMonthlyRent(booking),
+      booking: { ...booking, sharing: correctSharing },
+      amount: getMonthlyRent({ ...booking, sharing: correctSharing }),
       code: "",
     });
   };
 
-  const confirmPayNow = async () => {
+  // Confirm payment
+  const doPayment = async () => {
     try {
-      if (!payModal.code || payModal.code.trim().toUpperCase() !== "MOHANSVPG") {
+      if (payModal.code.trim().toUpperCase() !== "MOHANSVPG")
         return alert("Invalid confirmation code");
-      }
 
       const b = payModal.booking;
 
@@ -131,345 +94,378 @@ const loadBookings = useCallback(async () => {
         bookingId: b._id,
         amount: payModal.amount,
         code: payModal.code.trim(),
-        // required fields for backend
         name: b.name,
         phone: b.phone,
+        email: b.email,
         roomNumber: `${b.floor}${String(b.room).padStart(2, "0")}`,
         bedNumber: b.bed,
       });
 
-      if (res.data && res.data.success) {
-        alert("Payment saved");
-        setPayModal({ open: false, booking: null, amount: 0, code: "" });
-        await loadBookings();
-      } else {
-        alert(res.data?.message || "Payment failed");
-      }
+      if (!res.data?.success)
+        return alert(res.data?.message || "Payment failed");
+
+      alert("Payment Saved");
+      setPayModal({ open: false, booking: null, amount: 0, code: "" });
+      loadBookings();
     } catch (err) {
       console.error("Payment error:", err);
-      alert(err?.response?.data?.message || "Payment failed");
+      alert("Payment failed");
     }
   };
 
-  // -----------------------------
-  // UPDATE BOOKING
-  // -----------------------------
-  const openUpdateModal = (booking) => {
-    setUpdateModal({ open: true, booking: { ...booking } });
-  };
-
-  const saveUpdatedBooking = async () => {
-    const b = updateModal.booking;
+  // Update booking details
+  const saveUpdate = async () => {
     try {
-      const res = await api.put(`/bookings/${b._id}`, {
+      const b = updateModal.booking;
+      await api.put(`/bookings/${b._id}`, {
         name: b.name,
         phone: b.phone,
         email: b.email,
       });
-
-      if (res.data && res.data.success) {
-        alert("Updated successfully");
-        setUpdateModal({ open: false, booking: null });
-        await loadBookings();
-      } else {
-        alert(res.data?.message || "Update failed");
-      }
+      alert("Updated successfully");
+      setUpdateModal({ open: false, booking: null });
+      loadBookings();
     } catch (err) {
-      console.error("Update failed:", err);
       alert("Update failed");
     }
   };
 
-  // -----------------------------
-  // RECEIPT
-  // -----------------------------
-  const openReceiptModal = (booking) => {
-    setReceiptModal({ open: true, booking });
-  };
-
-  const downloadReceipt = (booking) => {
-    // build a small text receipt (client-side) OR call backend PDF endpoint.
-    // If you prefer backend PDF, call /payments/:id/receipt (we already added that).
-    // For now download a simple text receipt:
+  // Download text receipt
+  const downloadReceipt = (b) => {
     const text = `
-SV PG Receipt
-
-Name: ${booking.name}
-Phone: ${booking.phone}
-Email: ${booking.email}
-Room: ${booking.floor}${String(booking.room).padStart(2, "0")}
-Bed: ${booking.bed}
-Sharing: ${booking.sharing}
-Rent: ₹${getMonthlyRent(booking)}
-Join: ${booking.joinDate?.slice(0, 10)}
+--- SV PG Receipt ---
+Name: ${b.name}
+Phone: ${b.phone}
+Email: ${b.email || "N/A"}
+Room: ${b.floor}${String(b.room).padStart(2, "0")}
+Bed: ${b.bed}
+Amount Paid: ₹${b.amountPaid || 0}
+----------------------
     `.trim();
 
     const blob = new Blob([text], { type: "text/plain" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `SVPG_Receipt_${booking.name.replace(/\s+/g, "_")}.txt`;
+    a.download = `SVPG_Receipt_${b.name.replace(/\s+/g, "_")}.txt`;
     a.click();
     URL.revokeObjectURL(a.href);
   };
 
-  // FILTER
+  // Photo URL fix
+  function photoUrl(p) {
+    if (!p) return "";
+
+    // Fix backslashes → /
+    let clean = p.replace(/\\/g, "/");
+
+    // Remove starting ./ or /
+    clean = clean.replace(/^\.?\/*/, "");
+
+    // Ensure path starts with uploads/
+    if (!clean.startsWith("uploads")) {
+      clean = "uploads/" + clean;
+    }
+
+    return `http://localhost:5000/${clean}`;
+  }
+
+
+  // Search filter
   const filtered = bookings.filter((b) => {
     const s = searchTerm.toLowerCase();
-    const room = `${b.floor}${String(b.room).padStart(2, "0")}`;
     return (
       (b.name || "").toLowerCase().includes(s) ||
       (b.phone || "").includes(s) ||
-      room.includes(s) ||
-      String(b.bed).includes(s) ||
-      (b.email || "").toLowerCase().includes(s)
+      `${b.floor}${String(b.room).padStart(2, "0")}`.includes(s)
     );
   });
 
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3>🏠 My Booking Details</h3>
-        <input
-          placeholder="Search name, phone, room, bed..."
-          className="form-control"
-          style={{ maxWidth: 360 }}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+    <div className="room-page-wrapper">
+      <div className="container py-4 room-container">
+        <div className="d-flex justify-content-between mb-3">
+          <h3>🏠 My Booking Details</h3>
+          <input
+            placeholder="Search name, phone, room..."
+            className="form-control"
+            style={{ maxWidth: 360 }}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
-      <div className="row g-4">
-        {filtered.map((b) => (
-          <div key={b._id} className="col-md-6">
-            <div className="card p-3 shadow-sm">
-              <div className="d-flex justify-content-between">
-                <div className="d-flex">
-                  {b.photo && (
-                    <img
-                      src={`https://mohansvpg-frontend.onrender.com/${b.photo}`}
-                      alt={b.name}
-                      style={{
-                        width: 60,
-                        height: 60,
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        marginRight: 12,
-                        border: "2px solid #ddd",
-                      }}
-                    />
-                  )}
-                  <div>
-                    <h5 className="mb-1">{b.name}</h5>
+        <div className="row g-4">
+          {filtered.map((b) => (
+            <div key={b._id} className="col-md-6">
+              <div className="card p-3 shadow-sm">
+                <div className="d-flex justify-content-between">
+                  <div className="d-flex">
+                    {b.photo ? (
+                      <img
+                        src={photoUrl(b.photo)}
+                        alt=""
+                        style={{
+                          width: 60,
+                          height: 60,
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                          marginRight: 12,
+                          border: "2px solid #ddd",
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: 60,
+                          height: 60,
+                          borderRadius: "50%",
+                          background: "#ccc",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          marginRight: 12,
+                        }}
+                      >
+                        {b.name?.[0]?.toUpperCase()}
+                      </div>
+                    )}
+
+                    <div>
+                      <h5 className="mb-1">{b.name}</h5>
+                      <div className="text-muted small">
+                        Room: {b.floor}
+                        {String(b.room).padStart(2, "0")} • Bed {b.bed}
+                      </div>
+                      <div className="small mt-1">
+                        <strong>📞</strong> {b.phone} •{" "}
+                        <strong>📧</strong> {b.email || "N/A"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-end">
+                    <div className="text-success fw-bold">
+                      ₹{b.amountPaid || 0}
+                    </div>
                     <div className="text-muted small">
-                      Room: {b.floor}
-                      {String(b.room).padStart(2, "0")} • Bed {b.bed}
+                      {new Date(b.createdAt).toLocaleString()}
                     </div>
                   </div>
                 </div>
 
-                <div>
-                  <div className="text-success fw-bold">₹{b.amountPaid || 0}</div>
-                  <div className="text-muted small">{new Date(b.createdAt).toLocaleString()}</div>
+                <hr />
+
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn btn-warning"
+                    onClick={() =>
+                      setUpdateModal({ open: true, booking: b })
+                    }
+                  >
+                    ✏ Update
+                  </button>
+
+                  <button
+                    className="btn btn-success"
+                    onClick={() =>
+                      setReceiptModal({ open: true, booking: b })
+                    }
+                  >
+                    🧾 Receipt
+                  </button>
+
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => openPayModal(b)}
+                  >
+                    💳 Pay
+                  </button>
                 </div>
               </div>
+            </div>
+          ))}
+        </div>
 
-              <hr />
+        {/* UPDATE MODAL */}
+        {updateModal.open && (
+          <div
+            className="modal fade show d-block"
+            style={{ background: "rgba(0,0,0,.5)" }}
+          >
+            <div className="modal-dialog modal-sm">
+              <div className="modal-content p-3">
+                <h5>Edit Details</h5>
 
-              <p className="mb-1"><strong>📞</strong> {b.phone}</p>
-              <p className="mb-1"><strong>📧</strong> {b.email}</p>
-              <p className="mb-1"><strong>Join:</strong> {b.joinDate?.substring(0, 10)}</p>
+                <label>Name</label>
+                <input
+                  className="form-control mb-2"
+                  value={updateModal.booking.name}
+                  onChange={(e) =>
+                    setUpdateModal((p) => ({
+                      ...p,
+                      booking: { ...p.booking, name: e.target.value },
+                    }))
+                  }
+                />
 
-              <div className="d-flex gap-2 mt-3">
-                <button className="btn btn-warning" onClick={() => openUpdateModal(b)}>
-                  ✏ Update
-                </button>
+                <label>Phone</label>
+                <input
+                  className="form-control mb-2"
+                  value={updateModal.booking.phone}
+                  onChange={(e) =>
+                    setUpdateModal((p) => ({
+                      ...p,
+                      booking: { ...p.booking, phone: e.target.value },
+                    }))
+                  }
+                />
 
-                <button className="btn btn-success" onClick={() => openReceiptModal(b)}>
-                  🧾 Receipt
-                </button>
+                <label>Email</label>
+                <input
+                  className="form-control mb-2"
+                  value={updateModal.booking.email || ""}
+                  onChange={(e) =>
+                    setUpdateModal((p) => ({
+                      ...p,
+                      booking: { ...p.booking, email: e.target.value },
+                    }))
+                  }
+                />
 
-                <button className="btn btn-outline-primary" onClick={() => openShiftModal(b)}>
-                  🔁 Shift
-                </button>
+                <div className="d-flex justify-content-between mt-3">
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() =>
+                      setUpdateModal({ open: false, booking: null })
+                    }
+                  >
+                    Cancel
+                  </button>
 
-                {/* PAY BUTTON: now ALWAYS visible (no 5-day restriction) */}
-                <button className="btn btn-primary" onClick={() => openPayModal(b)}>
-                  💳 Pay Next Month
-                </button>
-
-                <button
-                  className="btn btn-danger ms-auto"
-                  onClick={async () => {
-                    if (!window.confirm("Checkout (delete) booking?")) return;
-                    await api.delete(`/bookings/${b._id}`);
-                    await loadBookings();
-                  }}
-                >
-                  🚪 Checkout
-                </button>
+                  <button className="btn btn-primary" onClick={saveUpdate}>
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        ))}
+        )}
+
+        {/* RECEIPT MODAL */}
+        {receiptModal.open && (
+          <div
+            className="modal fade show d-block"
+            style={{ background: "rgba(0,0,0,.5)" }}
+          >
+            <div className="modal-dialog modal-md">
+              <div className="modal-content p-3">
+                <h5>Booking Receipt</h5>
+
+                <div className="p-2">
+                  <p>
+                    <strong>Name:</strong> {receiptModal.booking.name}
+                  </p>
+                  <p>
+                    <strong>Phone:</strong> {receiptModal.booking.phone}
+                  </p>
+                  <p>
+                    <strong>Email:</strong>{" "}
+                    {receiptModal.booking.email || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Room:</strong> {receiptModal.booking.floor}
+                    {String(receiptModal.booking.room).padStart(2, "0")}
+                  </p>
+                  <p>
+                    <strong>Bed:</strong> {receiptModal.booking.bed}
+                  </p>
+                  <p>
+                    <strong>Sharing:</strong> {receiptModal.booking.sharing}
+                  </p>
+                  <p>
+                    <strong>Advance:</strong> ₹{ADVANCE}
+                  </p>
+                  <p>
+                    <strong>Monthly Rent:</strong> ₹
+                    {getMonthlyRent(receiptModal.booking)}
+                  </p>
+                  <p>
+                    <strong>Total Paid:</strong> ₹
+                    {receiptModal.booking.amountPaid || 0}
+                  </p>
+                </div>
+
+                <div className="d-flex justify-content-between mt-3">
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() =>
+                      setReceiptModal({ open: false, booking: null })
+                    }
+                  >
+                    Close
+                  </button>
+
+                  <button
+                    className="btn btn-success"
+                    onClick={() => downloadReceipt(receiptModal.booking)}
+                  >
+                    Download Receipt
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* PAY MODAL */}
+        {payModal.open && (
+          <div
+            className="modal fade show d-block"
+            style={{ background: "rgba(0,0,0,.5)" }}
+          >
+            <div className="modal-dialog modal-sm">
+              <div className="modal-content p-3">
+                <h5>Pay Next Month — {payModal.booking?.name}</h5>
+
+                <p className="fw-bold text-primary">
+                  {getMonthlyRent(payModal.booking) === 11000
+                    ? "2 Sharing — ₹11,000"
+                    : "3 Sharing — ₹9,000"}
+                </p>
+
+                <input
+                  className="form-control mb-2"
+                  placeholder="Enter confirmation code"
+                  value={payModal.code}
+                  onChange={(e) =>
+                    setPayModal((p) => ({ ...p, code: e.target.value }))
+                  }
+                />
+
+                <div className="d-flex justify-content-between">
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() =>
+                      setPayModal({
+                        open: false,
+                        booking: null,
+                        amount: 0,
+                        code: "",
+                      })
+                    }
+                  >
+                    Cancel
+                  </button>
+
+                  <button className="btn btn-primary" onClick={doPayment}>
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* UPDATE MODAL */}
-      {updateModal.open && (
-        <div className="modal fade show d-block" style={{ background: "rgba(0,0,0,.5)" }}>
-          <div className="modal-dialog modal-sm">
-            <div className="modal-content p-3">
-              <h5>Edit Details</h5>
-
-              <label>Name</label>
-              <input
-                className="form-control mb-2"
-                value={updateModal.booking.name}
-                onChange={(e) =>
-                  setUpdateModal((prev) => ({ ...prev, booking: { ...prev.booking, name: e.target.value } }))
-                }
-              />
-
-              <label>Phone</label>
-              <input
-                className="form-control mb-2"
-                value={updateModal.booking.phone}
-                onChange={(e) =>
-                  setUpdateModal((prev) => ({ ...prev, booking: { ...prev.booking, phone: e.target.value } }))
-                }
-              />
-
-              <label>Email</label>
-              <input
-                className="form-control"
-                value={updateModal.booking.email}
-                onChange={(e) =>
-                  setUpdateModal((prev) => ({ ...prev, booking: { ...prev.booking, email: e.target.value } }))
-                }
-              />
-
-              <div className="d-flex justify-content-between mt-3">
-                <button className="btn btn-secondary" onClick={() => setUpdateModal({ open: false, booking: null })}>
-                  Cancel
-                </button>
-
-                <button className="btn btn-primary" onClick={saveUpdatedBooking}>
-                  Save
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* RECEIPT MODAL */}
-      {receiptModal.open && (
-        <div className="modal fade show d-block" style={{ background: "rgba(0,0,0,.5)" }}>
-          <div className="modal-dialog modal-md">
-            <div className="modal-content p-3">
-              <h5>Receipt</h5>
-              <p><b>Name:</b> {receiptModal.booking.name}</p>
-              <p><b>Phone:</b> {receiptModal.booking.phone}</p>
-              <p><b>Email:</b> {receiptModal.booking.email}</p>
-              <p><b>Room:</b> {receiptModal.booking.floor}{String(receiptModal.booking.room).padStart(2, "0")}</p>
-              <p><b>Bed:</b> {receiptModal.booking.bed}</p>
-              <p><b>Sharing:</b> {receiptModal.booking.sharing}</p>
-              <p><b>Rent:</b> ₹{getMonthlyRent(receiptModal.booking)}</p>
-
-              <div className="d-flex gap-2 mt-2">
-                <button className="btn btn-outline-secondary" onClick={() => setReceiptModal({ open: false, booking: null })}>
-                  Close
-                </button>
-
-                <button className="btn btn-success" onClick={() => downloadReceipt(receiptModal.booking)}>
-                  Download Receipt
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* PAY MODAL */}
-      {payModal.open && (
-        <div className="modal fade show d-block" style={{ background: "rgba(0,0,0,.5)" }}>
-          <div className="modal-dialog modal-sm">
-            <div className="modal-content p-3">
-              <h5>Pay Next Month — {payModal.booking?.name}</h5>
-              <p>Amount: ₹{payModal.amount}</p>
-
-              <label>Enter Confirmation Code</label>
-              <input
-                className="form-control mb-2"
-                value={payModal.code}
-                onChange={(e) => setPayModal((prev) => ({ ...prev, code: e.target.value }))}
-                placeholder="MOHANSVPG"
-              />
-
-              <div className="d-flex justify-content-between">
-                <button className="btn btn-secondary" onClick={() => setPayModal({ open: false, booking: null, amount: 0, code: "" })}>
-                  Cancel
-                </button>
-
-                <button className="btn btn-primary" onClick={confirmPayNow}>
-                  Pay & Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* SHIFT MODAL */}
-      {shiftModal.open && (
-        <div className="modal fade show d-block" style={{ background: "rgba(0,0,0,.5)" }}>
-          <div className="modal-dialog modal-lg modal-dialog-scrollable">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5>Shift bed for {shiftModal.booking?.name}</h5>
-                <button className="btn-close" onClick={() => setShiftModal({ open: false, booking: null, available: {} })}></button>
-              </div>
-
-              <div className="modal-body">
-                {Object.entries(shiftModal.available).map(([floor, rooms]) => (
-                  <div key={floor} className="mb-3">
-                    <h6>Floor {floor}</h6>
-
-                    <div className="d-flex flex-wrap gap-2">
-                      {Object.entries(rooms).map(([roomNo, beds]) => (
-                        <div key={roomNo} className="border rounded p-2" style={{ minWidth: 180 }}>
-                          <div className="fw-bold">Room {floor}{String(roomNo).padStart(2, "0")}</div>
-                          <div className="text-muted small">Beds: {beds.length ? beds.join(", ") : "None"}</div>
-
-                          <div className="mt-2 d-flex flex-wrap gap-1">
-                            {beds.map((bn) => (
-                              <button
-                                key={bn}
-                                className="btn btn-sm btn-outline-primary"
-                                onClick={() => {
-                                  if (!window.confirm(`Move to Room ${floor}${String(roomNo).padStart(2, "0")} Bed ${bn}?`)) return;
-                                  confirmShift({ floor, room: roomNo, bed: bn });
-                                }}
-                              >
-                                Bed {bn}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="modal-footer">
-                <button className="btn btn-outline-secondary" onClick={() => setShiftModal({ open: false, booking: null, available: {} })}>
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

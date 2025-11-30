@@ -1,0 +1,181 @@
+/* -----------------------------------------------------
+    GLOBAL DARK THEME (FULL BLACK + WHITE FONT)
+------------------------------------------------------*/
+body,
+.room-page-wrapper,
+.admin-rooms-container {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+.room-page-wrapper *,
+.admin-rooms-container * {
+  color: #fff !important;
+  transition: 0.25s ease;
+}
+
+/* -----------------------------------------------------
+    PAGE TITLES
+------------------------------------------------------*/
+.room-title,
+.page-title {
+  color: #4cc9f0 !important;
+  font-size: 2rem;
+  font-weight: 800;
+  text-shadow: 0 0 16px #4cc9f0;
+}
+
+/* -----------------------------------------------------
+    SEARCH BAR (Glass Black)
+------------------------------------------------------*/
+.room-search {
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 12px;
+  border-radius: 14px;
+  color: #fff !important;
+  backdrop-filter: blur(12px);
+}
+
+.room-search:focus {
+  border-color: #4cc9f0;
+  box-shadow: 0 0 12px #4cc9f0;
+}
+
+/* -----------------------------------------------------
+    ROOM CARDS (Neon Glass)
+------------------------------------------------------*/
+.card {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+  transition: 0.3s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: #4cc9f0 !important;
+  box-shadow: 0 0 20px rgba(76, 201, 240, 0.7);
+}
+
+/* -----------------------------------------------------
+    PROFILE IMG (Neon Border)
+------------------------------------------------------*/
+.card img {
+  border: 3px solid #4cc9f0 !important;
+  border-radius: 50%;
+  box-shadow: 0 0 16px rgba(76, 201, 240, 1);
+  transition: 0.3s;
+}
+
+.card img:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 26px rgba(76, 201, 240, 1);
+}
+
+/* -----------------------------------------------------
+    BUTTON STYLES
+------------------------------------------------------*/
+.btn {
+  border-radius: 12px !important;
+  padding: 8px 14px;
+  font-weight: 600;
+  transition: 0.25s;
+}
+
+/* Blue Outline */
+.btn-outline-primary {
+  border-color: #4cc9f0 !important;
+  color: #4cc9f0 !important;
+}
+.btn-outline-primary:hover {
+  background: #4cc9f0 !important;
+  color: #000 !important;
+}
+
+/* Blue Solid */
+.btn-primary {
+  background: #4361ee !important;
+  border: none !important;
+}
+.btn-primary:hover {
+  background: #3047dc !important;
+  box-shadow: 0 0 14px rgba(67, 97, 238, 1);
+}
+
+/* Red Solid */
+.btn-danger {
+  background: #d90429 !important;
+}
+.btn-danger:hover {
+  background: #ef233c !important;
+  box-shadow: 0 0 14px rgba(239, 35, 60, 1);
+}
+
+/* Green Success */
+.btn-success {
+  background: #00ff88 !important;
+  color: #000 !important;
+}
+.btn-success:hover {
+  background: #00d975 !important;
+  box-shadow: 0 0 14px rgba(0, 255, 140, 1);
+}
+
+/* -----------------------------------------------------
+    SHIFT BED UI
+------------------------------------------------------*/
+.border {
+  border-color: #4cc9f0 !important;
+}
+
+.btn-outline-primary.btn-sm {
+  border-color: #4cc9f0 !important;
+}
+
+/* -----------------------------------------------------
+    MODAL (Dark Glass Popup)
+------------------------------------------------------*/
+.modal-content {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(20px);
+  border-radius: 18px;
+  color: #fff !important;
+  padding: 15px;
+}
+
+.modal-content input {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 10px;
+  color: white;
+  border-radius: 10px;
+}
+
+.modal-content input:focus {
+  border-color: #4cc9f0 !important;
+  box-shadow: 0 0 14px #4cc9f0;
+}
+
+/* -----------------------------------------------------
+    EMPTY TEXT
+------------------------------------------------------*/
+.text-muted {
+  color: #bbb !important;
+}
+
+/* -----------------------------------------------------
+    RESPONSIVE
+------------------------------------------------------*/
+@media (max-width: 768px) {
+  .room-search {
+    width: 100%;
+  }
+
+  .card {
+    padding: 16px !important;
+  }
+}

@@ -6,6 +6,7 @@ function Navbar() {
   const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem("user"));
+  const firstLetter = user ? user.username?.charAt(0)?.toUpperCase() : null;
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -13,90 +14,71 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
+    <nav className="navbar navbar-expand-lg navbar-dark custom-nav sticky-top">
       <div className="container-fluid">
 
         {/* LOGO */}
-        <NavLink to="/" className="navbar-brand d-flex align-items-center">
+        <NavLink className="navbar-brand d-flex align-items-center" to="/">
           <img
             src={process.env.PUBLIC_URL + "/images/pg-icon.png"}
-            alt="PG Logo"
-            width="40"
-            height="40"
-            className="me-2 rounded-circle border border-light"
+            className="nav-logo me-2"
+            alt="logo"
           />
-          <span className="fw-bold fs-5">S.V PG for Gents Only</span>
+          S.V PG for Gents Only
         </NavLink>
 
-        {/* MOBILE TOGGLE */}
+        {/* TOGGLE BUTTON */}
         <button
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
+          data-bs-target="#navMenu"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
 
         {/* NAV LINKS */}
-        <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-          <ul className="navbar-nav align-items-center gap-2">
+        <div className="collapse navbar-collapse" id="navMenu">
+
+          <ul className="navbar-nav mx-auto gap-2">
 
             <li className="nav-item">
-              <NavLink to="/" className="nav-link">🏠 Home</NavLink>
+              <NavLink className="nav-link" to="/">Home</NavLink>
             </li>
 
             <li className="nav-item">
-              <NavLink to="/rooms" className="nav-link">🛏 Rooms</NavLink>
+              <NavLink className="nav-link" to="/rooms">Rooms</NavLink>
             </li>
 
             <li className="nav-item">
-              <NavLink to="/roomdetails" className="nav-link">📋 Room Details</NavLink>
+              <NavLink className="nav-link" to="/roomdetails">Room Details</NavLink>
             </li>
 
-            {/* <li className="nav-item">
-              <NavLink to="/bookings" className="nav-link">📚 Bookings</NavLink>
-            </li> */}
-
-            {/* USER NOT LOGGED IN */}
-            {!user && (
-              <>
-                <li className="nav-item">
-                  <NavLink to="/register" className="btn btn-outline-light btn-sm px-3">
-                    📝 Register
-                  </NavLink>
-                </li>
-
-                <li className="nav-item">
-                  <NavLink to="/login" className="btn btn-light btn-sm px-3">
-                    🔑 Login
-                  </NavLink>
-                </li>
-              </>
-            )}
-
-            {/* USER LOGGED IN */}
             {user && (
-              <>
-                <li className="nav-item">
-                  <NavLink to="/paymentdetails" className="nav-link">
-                    💳 Payments
-                  </NavLink>
-                </li>
-
-                <li className="nav-item text-white me-2">
-                  👤 <strong>{user.username || user.email}</strong>
-                </li>
-
-                <li className="nav-item">
-                  <button onClick={handleLogout} className="btn btn-danger btn-sm px-3">
-                    🚪 Logout
-                  </button>
-                </li>
-              </>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/paymentdetails">Payments</NavLink>
+              </li>
             )}
 
           </ul>
+
+          {/* USER INITIAL CIRCLE OR BUTTONS */}
+          {!user ? (
+            <>
+              <NavLink to="/login" className="btn btn-light btn-sm ms-3">Login</NavLink>
+              <NavLink to="/register" className="btn btn-outline-light btn-sm ms-2">Register</NavLink>
+            </>
+          ) : (
+            <>
+              {/* USER INITIAL BADGE */}
+              <div className="user-circle ms-3">{firstLetter}</div>
+
+              <button className="btn btn-danger btn-sm ms-2" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          )}
+
         </div>
       </div>
     </nav>

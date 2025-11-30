@@ -1,24 +1,31 @@
-// models/Booking.js
+// backend/models/Booking.js
 import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     name: { type: String, required: true },
     phone: { type: String, required: true },
-    altPhone: { type: String },
-    email: { type: String },
-    aadharNumber: { type: String },
-    joinDate: { type: Date, required: true },
-    floor: { type: String, required: true },
+    altPhone: { type: String, default: "" },
+    email: { type: String, required: true },
+
+    // Make Aadhaar optional to avoid blocking admin quick bookings.
+    aadharNumber: { type: String, required: false, default: "" },
+
+    joinDate: { type: String, required: true },
+
+    floor: { type: Number, required: true },
     room: { type: Number, required: true },
     bed: { type: Number, required: true },
+
+    // Keep userId as string (flexible)
+    userId: { type: String, default: "admin" },
+
     amountPaid: { type: Number, default: 0 },
-    photo: { type: String }, // path to uploaded photo
-    aadharFile: { type: String }, // path to uploaded aadhaar
+
+    photo: { type: String, default: "" },
+    aadharFile: { type: String, default: "" },
   },
   { timestamps: true }
 );
 
-const Booking = mongoose.model("Booking", bookingSchema);
-export default Booking;
+export default mongoose.model("Booking", bookingSchema);

@@ -7,6 +7,8 @@ import Bookings from "./pages/Bookings";
 import Payments from "./pages/Payments";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import AdminRooms from "./pages/AdminRooms";
+import AdminRoomDetails from "./pages/AdminRoomDetails";
 
 export default function App() {
   return (
@@ -48,6 +50,17 @@ export default function App() {
             </AdminProtectedRoute>
           }
         />
+        <Route path="/admin/rooms" element={<AdminRooms />} />
+        <Route
+          path="/admin/roomdetails"
+          element={
+            <AdminProtectedRoute>
+              <AdminRoomDetails />
+            </AdminProtectedRoute>
+          }
+        />
+
+
       </Routes>
     </BrowserRouter>
   );

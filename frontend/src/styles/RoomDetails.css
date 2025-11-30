@@ -1,202 +1,274 @@
-/* frontend/src/styles/RoomDetails.css */
-
-/* 🌟 Page layout */
-.container {
-  max-width: 1100px;
+/* ==========================================
+   PAGE BACKGROUND (BLACK + Blur)
+========================================== */
+.room-page-wrapper {
+  background: #000000;
+  min-height: 100vh;
+  padding-top: 20px;
+  padding-bottom: 40px;
 }
 
-/* 🔍 Search bar */
-.search-bar input {
-  border-radius: 25px;
-  padding: 10px 16px;
-  font-size: 15px;
-  border: 1.5px solid #d0d0d0;
-  transition: all 0.3s ease;
+.room-container {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.search-bar input:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 6px rgba(13, 110, 253, 0.3);
+/* ==========================================
+   TITLE + SEARCH
+========================================== */
+.room-title {
+  color: #4cc9f0;
+  font-weight: bold;
+  font-size: 2rem;
 }
 
-/* 🪪 Booking Card Styling */
-.booking-card {
-  border-radius: 16px;
-  background: #ffffff;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid #e5e5e5;
+.room-search {
+  max-width: 360px;
+  border-radius: 30px;
+  background: #ffffff20;
+  border: 1px solid #ffffff30;
+  color: white;
+  padding-left: 30px;
 }
 
-.booking-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+.room-search::placeholder {
+  color: #aaa;
+  padding: auto;    
 }
 
-.booking-card .card-body {
-  background: #fdfdfd;
-  border-left: 3px solid #0d6efd;
-  border-radius: 0 16px 16px 0;
+/* Responsive Search Bar */
+@media (max-width: 768px) {
+  .room-search {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 10px;
+  }
 }
 
-.booking-card h5 {
-  color: #0d6efd;
-  font-weight: 700;
+/* ==========================================
+   CARD (Glassmorphism)
+========================================== */
+.card {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: white !important;
+  border-radius: 18px !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: 0.35s ease;
 }
 
-/* 🧩 Text style improvements */
-.card-text strong {
-  color: #212529;
+/* Hover Effect */
+.card:hover {
+  transform: translateY(-7px);
+  border-color: #4cc9f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
 }
 
-.card-text {
-  font-size: 15px;
-  color: #555;
+/* ==========================================
+   USER IMAGE
+========================================== */
+.card img {
+  border: 2px solid #4cc9f0 !important;
 }
 
-/* 📸 Image section */
-.booking-card img {
-  border-radius: 12px 0 0 12px;
-  height: 100%;
-  object-fit: cover;
+/* ==========================================
+   PRICE + DATE
+========================================== */
+.text-success {
+  color: #23eb52 !important;
 }
 
-/* ✏️ Buttons Styling */
-.btn-outline-primary {
-  border-radius: 20px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.btn-outline-primary:hover {
-  background-color: #0d6efd;
-  color: #fff;
-  transform: scale(1.05);
-}
-
-.btn-danger {
-  border-radius: 20px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.btn-danger:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 10px rgba(220, 53, 69, 0.4);
-}
-
-/* ✅ Aadhaar button */
-.btn-outline-secondary {
-  border-radius: 20px;
-  font-size: 14px;
-  padding: 4px 10px;
-}
-
-/* 🧭 Empty state */
 .text-muted {
-  font-size: 17px;
+  color: #d3d8e0 !important;
 }
 
-/* ✨ Update Form Overlay */
-.update-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 1050;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* ==========================================
+   BUTTONS (smaller + responsive)
+========================================== */
+.btn {
+  border-radius: 10px !important;
+  transition: 0.25s ease;
+  font-weight: 500;
+  padding: 4px 10px !important;   /* 🔥 smaller buttons */
+  font-size: 0.85rem !important;
 }
 
-/* 📋 Update Form Card */
-.update-form {
-  width: 100%;
-  max-width: 420px;
-  background: #fff;
-  border-radius: 20px;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.update-form h4 {
-  text-align: center;
-  font-weight: 700;
-}
-
-.update-form input {
-  border-radius: 10px;
-  border: 1.5px solid #d0d0d0;
-}
-
-.update-form input:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 6px rgba(13, 110, 253, 0.3);
-}
-
-.update-form .btn {
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-/* 🌈 Animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.booking-card {
-  transition: transform 0.2s ease-in-out;
-}
-.booking-card:hover {
-  transform: translateY(-4px);
-}
-
-.update-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.update-form {
-  width: 400px;
-  background: #fff;
-}
-
-.btn-success {
-  background: linear-gradient(90deg, #198754, #28a745);
+/* Update */
+.btn-warning {
+  background: #ffb703;
   border: none;
-  transition: 0.2s;
+}
+.btn-warning:hover {
+  background: #f2a500;
+  transform: scale(1.05);
+}
+
+/* Receipt */
+.btn-success {
+  background: #32d172;
+  border: none;
 }
 .btn-success:hover {
+  background: #26c062;
   transform: scale(1.05);
-  background: linear-gradient(90deg, #157347, #1e8e5a);
-}
-/* RoomDetails.css */
-.hover-card:hover {
-  transform: translateY(-5px);
-  transition: 0.3s ease;
 }
 
-.card-title {
-  font-size: 1.1rem;
+/* Shift */
+.btn-outline-primary {
+  border-color: #4cc9f0;
+  color: #4cc9f0;
+}
+.btn-outline-primary:hover {
+  background: #4cc9f0;
+  color: #000;
+  transform: scale(1.05);
 }
 
-.badge {
-  font-weight: 600;
-  font-size: 0.9rem;
+/* Pay */
+.btn-primary {
+  background: #4361ee;
+  border: none;
+}
+.btn-primary:hover {
+  background: #3a4fd0;
+  transform: scale(1.05);
 }
 
+/* Checkout */
+.btn-danger {
+  background: #ef233c;
+  border: none;
+}
+.btn-danger:hover {
+  background: #d90429;
+  transform: scale(1.05);
+}
+
+/* MOBILE BUTTON RESIZING */
+@media (max-width: 768px) {
+  .btn {
+    padding: 6px 8px !important;
+    font-size: 0.80rem !important;
+  }
+
+  .d-flex.gap-2 {
+    flex-wrap: wrap;
+  }
+}
+
+/* ==========================================
+   MODALS — GLASS STYLE
+========================================== */
+.modal-content {
+  background: rgba(255, 255, 255, 0.10) !important;
+  color: white !important;
+  border-radius: 16px !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.modal-header,
+.modal-footer {
+  border: none !important;
+}
+
+.modal-title {
+  color: #4cc9f0;
+}
+
+.modal .btn-close {
+  filter: brightness(200%);
+}
+
+/* ==========================================
+   SHIFT MODAL BUTTONS
+========================================== */
+.btn-sm {
+  border-radius: 10px !important;
+}
+
+/* Selected bed */
+.btn-primary {
+  background: #4cc9f0 !important;
+  border: none !important;
+}
+
+/* ==========================================
+   LABELS
+========================================== */
+label {
+  color: #c7d5e0;
+  font-weight: 500;
+}
+
+/* ==========================================
+   INPUT FIELDS INSIDE MODALS
+========================================== */
+.modal-content input {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 10px;
+}
+
+.modal-content input::placeholder {
+  color: #cccccc;
+}
+
+/* ==========================================
+   Titles white
+========================================== */
+.d-flex h3 {
+  color: white;
+}
+/* --------- Responsive Action Buttons (cards) --------- */
+/* Target the button container used in RoomDetails.js:
+   <div class="d-flex gap-2"> ...buttons... </div>
+   We scope inside .card to avoid affecting other d-flex usages. */
+.card .d-flex.gap-2 {
+  display: flex !important;
+  flex-wrap: wrap;                /* allow wrapping */
+  gap: 8px;                       /* consistent gap */
+  align-items: center;
+}
+
+/* Default desktop: buttons keep their natural width, checkout pushed right */
+.card .d-flex.gap-2 .btn {
+  flex: 0 0 auto;                 /* don't stretch on desktop */
+  min-width: 96px;
+}
+
+/* If a button used ms-auto (checkout) keep it aligned to end when there is space */
+.card .d-flex.gap-2 .ms-auto {
+  margin-left: auto !important;
+}
+
+/* Small / mobile layout: two buttons per row */
+@media (max-width: 768px) {
+  .card .d-flex.gap-2 .btn {
+    /* make buttons share row, two per row */
+    flex: 1 1 calc(50% - 8px);
+    min-width: 0;
+  }
+
+  /* Make the checkout button full width and placed on its own row (if you prefer) */
+  .card .d-flex.gap-2 .ms-auto {
+    order: 999;                   /* push to the bottom */
+    flex: 1 1 100% !important;    /* full width */
+    margin-left: 0 !important;
+  }
+
+  /* ensure buttons wrap nicely */
+  .card .d-flex.gap-2 {
+    gap: 10px;
+  }
+}
+
+/* Very small narrow phones: single column buttons for maximum readability */
+@media (max-width: 420px) {
+  .card .d-flex.gap-2 .btn {
+    flex: 1 1 100%;
+  }
+}

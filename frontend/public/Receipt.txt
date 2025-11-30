@@ -1,0 +1,8 @@
+--- SV PG Receipt ---
+Name: vignash
+Phone: 7687564765
+Email: vignesh123@gmail.com
+Room: 102
+Bed: 1
+Amount Paid: ₹31000
+----------------------

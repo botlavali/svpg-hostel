@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api'; // Adjust the API URL as needed
+const API_URL = 'http://localhost:5000'; // Adjust the API URL as needed
 
 export const login = async (email, password) => {
     try {
