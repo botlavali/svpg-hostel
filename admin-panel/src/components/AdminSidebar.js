@@ -7,13 +7,14 @@ export default function AdminSidebar({ onClose }) {
 
   // SAFE JSON PARSE — prevents dashboard crash
   let admin = null;
-  try {
-    const stored = localStorage.getItem("adminUser");
-    admin = stored ? JSON.parse(stored) : null;
-  } catch (err) {
-    console.error("Admin parse error:", err);
-    admin = null;
-  }
+try {
+  const stored = localStorage.getItem("adminUser");
+  admin = stored ? JSON.parse(stored) : null;
+} catch (err) {
+  console.error("Admin parse error:", err);
+  admin = null;
+}
+
 
   const logout = () => {
     localStorage.removeItem("adminToken");
