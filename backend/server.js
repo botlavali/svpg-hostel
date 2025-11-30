@@ -18,9 +18,12 @@ const app = express();
 // ✅ SECURE CORS SETUP
 // ------------------------
 const allowedOrigins = [
-  "https://svpghostel.vercel.app",  // Production frontend
-  "http://localhost:3000",          // Local testing
+  "https://svpghostel.vercel.app",      // main frontend (users)
+  "https://svpg-hostel.vercel.app",     // admin frontend
+  "http://localhost:3000",
+  "http://localhost:3001"
 ];
+
 
 app.use(
   cors({
