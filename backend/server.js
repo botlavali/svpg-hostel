@@ -71,10 +71,12 @@ app.use(
 import userRoutes from "./routes/users.js";
 import bookingRoutes from "./routes/bookings.js";
 import paymentRoutes from "./routes/payments.js";
+import adminRoutes from "./routes/admin.js";
 
 app.use("/users", userRoutes);
 app.use("/bookings", bookingRoutes);
 app.use("/payments", paymentRoutes);
+app.use("/admin", adminRoutes);
 
 // ------------------------
 // MongoDB + Start Server
