@@ -1,33 +1,33 @@
+import axios from "axios";
+
 const API_URL = "https://svpg-hostel.onrender.com/admin";
- // Adjust the API URL as needed
 
 export const login = async (email, password) => {
-    try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        });
+  try {
+    const res = await axios.post(`${API_URL}/login`, { email, password });
 
-        if (!response.ok) {
-            throw new Error('Login failed');
-        }
-
-        const data = await response.json();
-        localStorage.setItem('token', data.token); // Store the token for authentication
-        return true;
-    } catch (error) {
-        console.error(error);
-        return false;
+    if (res.data.success) {
+      // Save both admin and token
+      localStorage.setItem("adminToken", res.data.token);
+      localStorage.setItem("adminUser", JSON.stringify(res.data.admin));
+      return { success: true };
     }
+
+    return { success: false, message: res.data.message };
+
+  } catch (err) {
+    return {
+      success: false,
+      message: err.response?.data?.message || "Login failed",
+    };
+  }
 };
 
 export const logout = () => {
-    localStorage.removeItem('token'); // Remove the token on logout
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("adminUser");
 };
 
 export const isAuthenticated = () => {
-    return localStorage.getItem('token') !== null; // Check if the user is authenticated
+  return !!localStorage.getItem("adminToken");
 };
