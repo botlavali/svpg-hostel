@@ -1,39 +1,89 @@
 import express from "express";
 import mongoose from "mongoose";
-import cors from "cors";
 import dotenv from "dotenv";
+import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
 dotenv.config();
 
-// Fix dirname in ES modules
+// Fix dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express();   // ✅ app MUST be defined BEFORE app.use()
+// Initialize Express
+const app = express();
 
-// CORS FIX FOR VERCEL FRONTEND
+// ------------------------
+// ✅ SECURE CORS SETUP
+// ------------------------
+const allowedOrigins = [
+  "https://svpghostel.vercel.app",  // Production frontend
+  "http://localhost:3000",          // Local testing
+];
+
 app.use(
   cors({
-    origin: [
-      "https://svpghostel.vercel.app",
-      "http://localhost:3000",
-    ],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // Postman, server-to-server
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+
+      console.log("❌ CORS Blocked:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
+    methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS",
   })
 );
 
-app.options("*", cors());
-app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "routes/uploads")));
+// Preflight handler
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    return res.sendStatus(200);
+  }
+  next();
+});
 
-// your routes...
-mongoose.connect(process.env.MONGO_URI)
+// ------------------------
+// Middleware
+// ------------------------
+app.use(express.json());
+
+// ------------------------
+// ✅ STATIC FILES (PHOTO FIX)
+// ------------------------
+// Serve uploads folder correctly for Render & local
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"))
+);
+
+// This will serve images like:
+// https://svpg-backend.onrender.com/uploads/filename.jpg
+
+// ------------------------
+// Import Routes
+// ------------------------
+import userRoutes from "./routes/users.js";
+import bookingRoutes from "./routes/bookings.js";
+import paymentRoutes from "./routes/payments.js";
+
+app.use("/users", userRoutes);
+app.use("/bookings", bookingRoutes);
+app.use("/payments", paymentRoutes);
+
+// ------------------------
+// MongoDB + Start Server
+// ------------------------
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(5000, () => {
-      console.log("Server running");
+    console.log("📦 MongoDB Connected ✔");
+
+    const port = process.env.PORT || 5000;
+    app.listen(port, () => {
+      console.log(`🚀 Server running → http://localhost:${port}`);
     });
   })
-  .catch(err => console.log(err));
+  .catch((err) => console.error("❌ MongoDB error:", err));
