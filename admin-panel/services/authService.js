@@ -8,7 +8,8 @@ export const login = async (email, password) => {
     const res = await axios.post(`${API_URL}/login`, { email, password });
     if (res.data.success) {
       // save token + admin user object (backend must return { success, token, admin })
-      localStorage.setItem("adminToken", res.data.token);
+      localStorage.setItem("adminUser", JSON.stringify(data.admin));
+
       localStorage.setItem("adminUser", JSON.stringify(res.data.admin || null));
       return { success: true };
     }
