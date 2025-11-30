@@ -13,35 +13,15 @@ const router = express.Router();
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
 
-  const ADMIN_EMAIL = "mohansvpg@gmail.com";
-  const ADMIN_PASSWORD = "Mohansvpg123";
-
-  if (email !== ADMIN_EMAIL) {
-    return res.status(400).json({ 
-      success: false, 
-      message: "Admin not found" 
+  // Hardcoded admin login (You can modify based on your DB)
+  if (email === "admin@gmail.com" && password === "admin123") {
+    const token = jwt.sign({ role: "admin" }, process.env.ADMIN_JWT_SECRET, {
+      expiresIn: "7d",
     });
+    return res.json({ success: true, token });
   }
 
-  if (password !== ADMIN_PASSWORD) {
-    return res.status(400).json({ 
-      success: false, 
-      message: "Incorrect password" 
-    });
-  }
-
-  const token = jwt.sign(
-    { id: "ADMIN", role: "admin" },
-    process.env.ADMIN_JWT_SECRET || "AdminSecretKey",
-    { expiresIn: "7d" }
-  );
-
-  return res.json({
-    success: true,
-    message: "Admin login success",
-    token,
-    admin: { name: "Admin", email: ADMIN_EMAIL }
-  });
+  return res.status(401).json({ success: false, message: "Invalid credentials" });
 });
 
 /* --------------------------------------
