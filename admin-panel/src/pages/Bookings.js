@@ -19,7 +19,7 @@ export default function Bookings() {
       setBookings(list);
       setFilteredList(list);
     } catch (e) {
-      setErr(e.response?.data?.message || "Failed to load bookings");
+      setErr("Failed to load bookings");
     }
   };
 
@@ -39,6 +39,7 @@ export default function Bookings() {
 
   const handleSearch = (value) => {
     setSearch(value);
+
     if (!value.trim()) return setFilteredList(bookings);
 
     const k = value.toLowerCase();
@@ -54,21 +55,25 @@ export default function Bookings() {
     );
   };
 
-  const photoUrl = (p) => {
-    if (!p) return "";
-    if (p.startsWith("http")) return p;
-    return `https://37ptgzfs-5000.inc1.devtunnels.ms/${p.replace(/\\/g, "/")}`;
+  // ⭐ FIXED IMAGE URL BUILDER ⭐
+  const photoUrl = (filePath) => {
+    if (!filePath) return "";
+
+    let clean = filePath.replace(/\\/g, "/"); // windows fix
+    clean = clean.replace(/^\.?\/*/, "");     // remove ./ or /
+
+    if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
+
+    return `${process.env.REACT_APP_API_URL}/${clean}`;
   };
 
   return (
     <div className="booking-page">
-
-      {/* Search */}
       <div className="booking-search-box">
         <input
           type="text"
           className="booking-search-input"
-          placeholder="🔍 Search name, phone, room, bed, email..."
+          placeholder="Search name, phone, room, bed..."
           value={search}
           onChange={(e) => handleSearch(e.target.value)}
         />
@@ -79,7 +84,6 @@ export default function Bookings() {
       <div className="booking-grid">
         {filteredList.map((b) => (
           <div className="booking-card glass-card" key={b._id}>
-
             <div className="booking-header">
               <div className="booking-avatar">
                 {b.photo ? (
@@ -110,7 +114,7 @@ export default function Bookings() {
               <p>📞 <strong>Phone:</strong> {b.phone}</p>
 
               <p>
-                🆔 <strong>Aadhaar:</strong>{" "}
+                🆔 <strong>Aadhaar File:</strong>{" "}
                 {b.aadharFile ? (
                   <a
                     href={photoUrl(b.aadharFile)}
@@ -121,7 +125,7 @@ export default function Bookings() {
                     View File
                   </a>
                 ) : (
-                  "No File"
+                  "No file"
                 )}
               </p>
 
