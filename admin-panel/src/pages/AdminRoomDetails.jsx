@@ -197,6 +197,7 @@ function photoUrl(p) {
 }
 
 
+
   return (
     <AdminLayout>
       <div className="room-page-wrapper">
