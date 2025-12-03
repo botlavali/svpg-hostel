@@ -153,22 +153,17 @@ Amount Paid: ₹${b.amountPaid || 0}
   };
 
   // Photo URL fix
-  function photoUrl(p) {
-    if (!p) return "";
+function photoUrl(p) {
+  if (!p) return "";
 
-    // Fix backslashes → /
-    let clean = p.replace(/\\/g, "/");
+  let clean = p.replace(/\\/g, "/");
+  clean = clean.replace(/^\.?\/*/, "");
 
-    // Remove starting ./ or /
-    clean = clean.replace(/^\.?\/*/, "");
+  if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
 
-    // Ensure path starts with uploads/
-    if (!clean.startsWith("uploads")) {
-      clean = "uploads/" + clean;
-    }
+  return `https://svpg-hostel.onrender.com/${clean}`;
+}
 
-    return `https://37ptgzfs-5000.inc1.devtunnels.ms/${clean}`;
-  }
 
 
   // Search filter
