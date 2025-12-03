@@ -1,4 +1,4 @@
-// src/pages/Bookings.jsx
+// src/pages/Bookings.js
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import "./Bookings.css";
@@ -9,32 +9,17 @@ export default function Bookings() {
   const [search, setSearch] = useState("");
   const [err, setErr] = useState("");
 
-  // FIXED backend base URL
-  const BACKEND = "https://svpg-hostel.onrender.com";
-
-  // ⭐ FINAL FIXED IMAGE URL FUNCTION ⭐
-  const photoUrl = (filePath) => {
-    if (!filePath) return "";
-
-    let clean = filePath.replace(/\\/g, "/");
-    clean = clean.replace(/^\.?\/*/, "");
-
-    if (!clean.startsWith("uploads/")) clean = "uploads/" + clean;
-
-    return `${BACKEND}/${clean}`;
-  };
-
   const load = async () => {
     try {
       const res = await api.get("/bookings");
+
       const list = Array.isArray(res.data)
         ? res.data
-        : res.data?.data || res.data?.bookings || [];
+        : res.data?.bookings || res.data?.data || [];
 
       setBookings(list);
       setFilteredList(list);
     } catch (e) {
-      console.log(e);
       setErr("Failed to load bookings");
     }
   };
@@ -71,6 +56,18 @@ export default function Bookings() {
     );
   };
 
+  // ⭐ CORRECT FIX FOR PHOTO URL ⭐
+  const photoUrl = (filePath) => {
+    if (!filePath) return "";
+
+    let clean = filePath.replace(/\\/g, "/");
+    clean = clean.replace(/^\.?\/*/, "");
+
+    if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
+
+    return `https://svpg-hostel.onrender.com/${clean}`;
+  };
+
   return (
     <div className="booking-page">
       <div className="booking-search-box">
@@ -91,7 +88,7 @@ export default function Bookings() {
             <div className="booking-header">
               <div className="booking-avatar">
                 {b.photo ? (
-                  <img src={photoUrl(b.photo)} alt="photo" />
+                  <img src={photoUrl(b.photo)} alt="" />
                 ) : (
                   <span>{b.name?.[0]?.toUpperCase()}</span>
                 )}
@@ -115,9 +112,7 @@ export default function Bookings() {
             </div>
 
             <div className="booking-details">
-              <p>
-                📞 <strong>Phone:</strong> {b.phone}
-              </p>
+              <p>📞 <strong>Phone:</strong> {b.phone}</p>
 
               <p>
                 🆔 <strong>Aadhaar File:</strong>{" "}
@@ -135,10 +130,7 @@ export default function Bookings() {
                 )}
               </p>
 
-              <p>
-                📅 <strong>Join Date:</strong>{" "}
-                {b.joinDate?.substring(0, 10)}
-              </p>
+              <p>📅 <strong>Join Date:</strong> {b.joinDate?.substring(0, 10)}</p>
             </div>
 
             <hr className="booking-line" />
