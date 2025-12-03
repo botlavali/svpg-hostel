@@ -185,31 +185,18 @@ export default function AdminRoomDetails() {
     }
   }
 
-<<<<<<< HEAD
 function photoUrl(p) {
   if (!p) return "";
 
   let clean = p.replace(/\\/g, "/");
   clean = clean.replace(/^\.?\/*/, "");
-=======
-  const photoUrl = (filePath) => {
-    if (!filePath) return "";
 
-    let clean = filePath.replace(/\\/g, "/");
-    clean = clean.replace(/^\.?\/*/, "");
->>>>>>> c156effd (Fix photo URL for all pages)
-
-  if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
+  if (!clean.startsWith("uploads")) {
+    clean = "uploads/" + clean;
+  }
 
   return `https://svpg-hostel.onrender.com/${clean}`;
 }
-
-<<<<<<< HEAD
-=======
-    return `https://svpg-hostel.onrender.com/${clean}`;
-  };
-
->>>>>>> c156effd (Fix photo URL for all pages)
 
 
   return (
