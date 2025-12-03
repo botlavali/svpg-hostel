@@ -185,16 +185,17 @@ export default function AdminRoomDetails() {
     }
   }
 
-  function photoUrl(p) {
-    if (!p) return "";
+function photoUrl(p) {
+  if (!p) return "";
 
-    let clean = p.replace(/\\/g, "/");
-    clean = clean.replace(/^\.?\/*/, "");
+  let clean = p.replace(/\\/g, "/");
+  clean = clean.replace(/^\.?\/*/, "");
 
-    if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
+  if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
 
-    return `https://37ptgzfs-5000.inc1.devtunnels.ms/${clean}`;
-  }
+  return `https://svpg-hostel.onrender.com/${clean}`;
+}
+
 
   return (
     <AdminLayout>
