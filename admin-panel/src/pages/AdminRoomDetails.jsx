@@ -185,17 +185,31 @@ export default function AdminRoomDetails() {
     }
   }
 
+<<<<<<< HEAD
 function photoUrl(p) {
   if (!p) return "";
 
   let clean = p.replace(/\\/g, "/");
   clean = clean.replace(/^\.?\/*/, "");
+=======
+  const photoUrl = (filePath) => {
+    if (!filePath) return "";
+
+    let clean = filePath.replace(/\\/g, "/");
+    clean = clean.replace(/^\.?\/*/, "");
+>>>>>>> c156effd (Fix photo URL for all pages)
 
   if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
 
   return `https://svpg-hostel.onrender.com/${clean}`;
 }
 
+<<<<<<< HEAD
+=======
+    return `https://svpg-hostel.onrender.com/${clean}`;
+  };
+
+>>>>>>> c156effd (Fix photo URL for all pages)
 
 
   return (
@@ -391,11 +405,11 @@ function photoUrl(p) {
                                   const isSelected =
                                     shiftData.selected &&
                                     shiftData.selected.floor ===
-                                      bedObj.floor &&
+                                    bedObj.floor &&
                                     shiftData.selected.room ===
-                                      bedObj.room &&
+                                    bedObj.room &&
                                     shiftData.selected.bed ===
-                                      bedObj.bed;
+                                    bedObj.bed;
 
                                   return (
                                     <button
@@ -407,8 +421,8 @@ function photoUrl(p) {
                                         isSelected
                                           ? "btn btn-sm btn-primary"
                                           : bedObj.status === "free"
-                                          ? "btn btn-sm btn-outline-primary"
-                                          : "btn btn-sm btn-danger"
+                                            ? "btn btn-sm btn-outline-primary"
+                                            : "btn btn-sm btn-danger"
                                       }
                                       onClick={() =>
                                         bedObj.status === "free" &&

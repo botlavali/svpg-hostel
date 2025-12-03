@@ -69,6 +69,7 @@ export default function Bookings() {
 };
 
 
+
   return (
     <div className="booking-page">
       <div className="booking-search-box">
