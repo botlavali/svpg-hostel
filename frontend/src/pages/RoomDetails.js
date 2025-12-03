@@ -170,6 +170,7 @@ function photoUrl(p) {
 
 
 
+
   // Search filter
   const filtered = bookings.filter((b) => {
     const s = searchTerm.toLowerCase();
