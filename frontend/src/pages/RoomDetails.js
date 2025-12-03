@@ -153,27 +153,19 @@ Amount Paid: ₹${b.amountPaid || 0}
   };
 
   // Photo URL fix
-<<<<<<< HEAD
 function photoUrl(p) {
   if (!p) return "";
 
   let clean = p.replace(/\\/g, "/");
-=======
- const photoUrl = (filePath) => {
-  if (!filePath) return "";
-
-  let clean = filePath.replace(/\\/g, "/");
->>>>>>> c156effd (Fix photo URL for all pages)
   clean = clean.replace(/^\.?\/*/, "");
 
-  if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
+  if (!clean.startsWith("uploads")) {
+    clean = "uploads/" + clean;
+  }
 
   return `https://svpg-hostel.onrender.com/${clean}`;
-<<<<<<< HEAD
 }
-=======
-};
->>>>>>> c156effd (Fix photo URL for all pages)
+
 
 
 
