@@ -57,16 +57,17 @@ export default function Bookings() {
   };
 
   // ⭐ CORRECT FIX FOR PHOTO URL ⭐
-  const photoUrl = (filePath) => {
-    if (!filePath) return "";
+ const photoUrl = (filePath) => {
+  if (!filePath) return "";
 
-    let clean = filePath.replace(/\\/g, "/");
-    clean = clean.replace(/^\.?\/*/, "");
+  let clean = filePath.replace(/\\/g, "/");
+  clean = clean.replace(/^\.?\/*/, "");
 
-    if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
+  if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
 
-    return `https://svpg-hostel.onrender.com/${clean}`;
-  };
+  return `https://svpg-hostel.onrender.com/${clean}`;
+};
+
 
   return (
     <div className="booking-page">
