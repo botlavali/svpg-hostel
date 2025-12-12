@@ -21,7 +21,8 @@ const app = express();
 const allowedOrigins = [
   "https://svpghostel.vercel.app",   // main frontend (users)
   "https://svpg-hostel.vercel.app",
-  "https://svpg-hostel-sxi8.vercel.app", // admin frontend
+  "https://svpg-hostel-sxi8.vercel.app",
+  "https://your-frontend-render-url.onrender.com",// admin frontend
   "http://localhost:3000",
   "http://localhost:3001"
 ];
