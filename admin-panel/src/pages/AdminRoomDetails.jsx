@@ -186,6 +186,7 @@ export default function AdminRoomDetails() {
   }
 
 // frontend: use env var or fallback to your Render URL
+// frontend: use env var or fallback to your Render URL
 const BACKEND_BASE = process.env.REACT_APP_API_URL || "https://svpg-backend.onrender.com";
 
 function photoUrl(p) {
@@ -195,8 +196,6 @@ function photoUrl(p) {
   if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
   return `${BACKEND_BASE}/${clean}`;
 }
-
-
 
 
 
