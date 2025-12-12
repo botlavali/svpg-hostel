@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import "./Bookings.css";
+import photoUrl from "../utils/photoUrl";
 
 export default function Bookings() {
   const [bookings, setBookings] = useState([]);
