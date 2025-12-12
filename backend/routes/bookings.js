@@ -1,3 +1,4 @@
+// backend/routes/bookings.js
 import express from "express";
 import multer from "multer";
 import Booking from "../models/Booking.js";
@@ -7,45 +8,66 @@ import { fileURLToPath } from "url";
 
 const router = express.Router();
 
-/* FIX ABSOLUTE UPLOAD PATH */
+/* -------------------------
+   Paths / __dirname fix
+   ------------------------- */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const UPLOAD_DIR = path.join(__dirname, "uploads"); // <--- CORRECT FOLDER
+// Save uploads into backend/uploads (one level up from routes)
+const UPLOAD_DIR = path.join(__dirname, "..", "uploads");
 
+// Ensure folder exists
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  console.log("📁 Created upload folder:", UPLOAD_DIR);
 }
 
-/* MULTER STORAGE */
+/* -------------------------
+   Multer storage
+   ------------------------- */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) =>
-    cb(null, `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`),
+  filename: (req, file, cb) => {
+    const ts = Date.now();
+    const safe = file.originalname.replace(/\s+/g, "_");
+    cb(null, `${ts}-${safe}`);
+  },
 });
 
+/* Optional: add file filter / limits if you want
+   e.g. fileFilter: (req, file, cb) => { ... }
+   limits: { fileSize: 5 * 1024 * 1024 } // 5 MB
+*/
 const upload = multer({ storage });
 
-/* CLEAN DUPLICATE KEYS */
+/* -------------------------
+   Helpers
+   ------------------------- */
 function clean(body) {
   const out = {};
-  Object.keys(body).forEach((k) => {
+  Object.keys(body || {}).forEach((k) => {
     out[k] = Array.isArray(body[k]) ? body[k][0] : body[k];
   });
   return out;
 }
 
-/* GET ALL BOOKINGS */
+/* -------------------------
+   Routes
+   ------------------------- */
+
+// GET all bookings
 router.get("/", async (req, res) => {
   try {
     const bookings = await Booking.find().sort({ createdAt: -1 });
     res.json({ success: true, bookings });
   } catch (err) {
-    res.status(500).json({ success: false });
+    console.error("GET /bookings error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
-/* CREATE BOOKING */
+// CREATE booking (with files)
 router.post(
   "/",
   upload.fields([
@@ -54,6 +76,7 @@ router.post(
   ]),
   async (req, res) => {
     try {
+      // Clean duplicate-array values that sometimes appear from form-data
       req.body = clean(req.body);
 
       const booking = new Booking({
@@ -61,8 +84,9 @@ router.post(
         floor: Number(req.body.floor),
         room: Number(req.body.room),
         bed: Number(req.body.bed),
-        amountPaid: Number(req.body.amountPaid),
+        amountPaid: Number(req.body.amountPaid) || 0,
 
+        // Save relative path (frontend will prefix backend base URL)
         photo: req.files?.photo?.[0]
           ? "uploads/" + path.basename(req.files.photo[0].path)
           : "",
@@ -75,38 +99,37 @@ router.post(
       const saved = await booking.save();
       res.json({ success: true, booking: saved });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false });
+      console.error("POST /bookings error:", err);
+      res.status(500).json({ success: false, message: "Upload/save failed" });
     }
   }
 );
 
-/* UPDATE SHIFT */
+// UPDATE booking (shift or details)
 router.put("/:id", async (req, res) => {
   try {
-    const updated = await Booking.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-
+    const updated = await Booking.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     res.json({ success: true, updated });
   } catch (err) {
-    res.status(500).json({ success: false });
+    console.error("PUT /bookings/:id error:", err);
+    res.status(500).json({ success: false, message: "Update failed" });
   }
 });
 
-/* DELETE BOOKING */
+// DELETE booking
 router.delete("/:id", async (req, res) => {
   try {
     await Booking.findByIdAndDelete(req.params.id);
     res.json({ success: true });
   } catch (err) {
-    res.status(500).json({ success: false });
+    console.error("DELETE /bookings/:id error:", err);
+    res.status(500).json({ success: false, message: "Delete failed" });
   }
 });
 
-/* USER BOOKINGS */
+// GET bookings for a user
 router.get("/user/:id", async (req, res) => {
   try {
     const bookings = await Booking.find({ userId: req.params.id }).sort({
@@ -114,7 +137,8 @@ router.get("/user/:id", async (req, res) => {
     });
     res.json({ success: true, bookings });
   } catch (err) {
-    res.status(500).json({ success: false });
+    console.error("GET /bookings/user/:id error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
