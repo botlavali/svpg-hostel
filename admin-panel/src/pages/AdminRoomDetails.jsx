@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import api from "../api";
 import AdminLayout from "../layouts/AdminLayout";
 import "./AdminRooms.css";
+import photoUrl from "../utils/photoUrl";
 
 export default function AdminRoomDetails() {
   const [bookings, setBookings] = useState([]);
@@ -187,15 +188,15 @@ export default function AdminRoomDetails() {
 
 // frontend: use env var or fallback to your Render URL
 // frontend: use env var or fallback to your Render URL
-const BACKEND_BASE = process.env.REACT_APP_API_URL || "https://svpg-backend.onrender.com";
+// const BACKEND_BASE = process.env.REACT_APP_API_URL || "https://svpg-backend.onrender.com";
 
-function photoUrl(p) {
-  if (!p) return "";
-  let clean = p.replace(/\\/g, "/");
-  clean = clean.replace(/^\.?\/*/, "");
-  if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
-  return `${BACKEND_BASE}/${clean}`;
-}
+// function photoUrl(p) {
+//   if (!p) return "";
+//   let clean = p.replace(/\\/g, "/");
+//   clean = clean.replace(/^\.?\/*/, "");
+//   if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
+//   return `${BACKEND_BASE}/${clean}`;
+// }
 
 
 
