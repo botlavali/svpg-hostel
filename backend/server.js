@@ -1,4 +1,3 @@
-// backend/server.js
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -8,46 +7,65 @@ import { fileURLToPath } from "url";
 
 dotenv.config();
 
+// Fix dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Initialize Express
 const app = express();
 
-// Simple CORS (adapt allowed origins as needed)
+// ------------------------
+// ✅ SECURE CORS SETUP
+// ------------------------
 const allowedOrigins = [
-  "https://svpg-hostel.onrender.com",
-  "https://svpg-hostel-sxi8.vercel.app/",
+  "https://svpghostel.vercel.app",   // main frontend (users)
+  "https://svpg-hostel.vercel.app",
+  "https://svpg-hostel-sxi8.vercel.app", // admin frontend
   "http://localhost:3000",
-  "http://localhost:3001",
+  "http://localhost:3001"
 ];
 
 app.use(
   cors({
-    origin: (origin, cb) => {
-      if (!origin) return cb(null, true);
-      if (allowedOrigins.includes(origin)) return cb(null, true);
-      console.warn("Blocked CORS origin:", origin);
-      return cb(new Error("Not allowed by CORS"));
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // Postman, server-to-server
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      console.log("❌ CORS Blocked:", origin);
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS",
   })
 );
 
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ extended: true }));
+// Preflight handler
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    return res.sendStatus(200);
+  }
+  next();
+});
 
-// Serve uploads from multiple possible locations (robust)
-const uploads1 = path.join(__dirname, "uploads");
-const uploads2 = path.join(__dirname, "routes", "uploads");
-console.log("📁 Static uploads candidate 1:", uploads1);
-console.log("📁 Static uploads candidate 2:", uploads2);
+// ------------------------
+// Middleware
+// ------------------------
+app.use(express.json());
 
-// Serve whichever exists (but serve both — harmless if empty)
-app.use("/uploads", express.static(uploads1));
-app.use("/uploads", express.static(uploads2));
+// ------------------------
+// ✅ STATIC FILES (PHOTO FIX)
+// ------------------------
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"))
+);
 
-// Routes (adjust import paths if needed)
+// This will serve images like:
+// https://svpg-backend.onrender.com/uploads/filename.jpg
+
+// ------------------------
+// Import Routes
+// ------------------------
 import userRoutes from "./routes/users.js";
 import bookingRoutes from "./routes/bookings.js";
 import paymentRoutes from "./routes/payments.js";
@@ -58,34 +76,17 @@ app.use("/bookings", bookingRoutes);
 app.use("/payments", paymentRoutes);
 app.use("/admin", adminRoutes);
 
-// Healthcheck
-app.get("/", (req, res) => {
-  res.json({ success: true, message: "SV PG Backend Running" });
-});
-
-// Connect DB and start
-const MONGO = process.env.MONGO_URL || process.env.MONGO_URI;
-const PORT = process.env.PORT || 5000;
-
-async function start() {
-  try {
-    if (!MONGO) {
-      console.error("❌ MONGO connection string not set (MONGO_URL or MONGO_URI).");
-      process.exit(1);
-    }
-
-    console.log("🔌 Connecting to MongoDB...");
-    await mongoose.connect(MONGO, { serverSelectionTimeoutMS: 15000 });
+// ------------------------
+// MongoDB + Start Server
+// ------------------------
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
     console.log("📦 MongoDB Connected ✔");
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+    const port = process.env.PORT || 5000;
+    app.listen(port, () => {
+      console.log(`🚀 Server running → http://localhost:${port}`);
     });
-  } catch (err) {
-    console.error("❌ DB connect error:", err);
-    setTimeout(start, 5000);
-  }
-}
-start();
-
-// audit: update 2025-12-12T04:33:49Z
+  })
+  .catch((err) => console.error("❌ MongoDB error:", err));
