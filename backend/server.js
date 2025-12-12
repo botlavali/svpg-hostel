@@ -45,14 +45,9 @@ const UPLOADS_DIR = path.join(__dirname, "uploads");
 console.log("📁 Serving static uploads from:", UPLOADS_DIR);
 
 // serve /uploads
-app.use(
-  "/uploads",
-  express.static(UPLOADS_DIR, {
-    maxAge: "1d",
-    index: false,
-    fallthrough: true,
-  })
-);
+// serve uploads folder
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 // Helpful JSON 404 for missing files under /uploads
 app.get("/uploads/:file", (req, res) => {
