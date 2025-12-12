@@ -10,8 +10,8 @@ dotenv.config();
 // Fix dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const uploadsA = path.join(__dirname, "uploads");
-console.log("📁 Serving static uploads from:", uploadsA);
+const uploadsFolder = path.join(__dirname, "routes", "uploads");
+console.log("📁 Serving static uploads from (uploadsFolder):", uploadsFolder);
 // Initialize Express
 const app = express();
 
@@ -59,7 +59,7 @@ app.use(express.json());
 // ------------------------
 app.use(
   "/uploads",
-  express.static(path.join(__dirname, "uploads"))
+  express.static(path.join(__dirname, "routes", "uploads"))
 );
 
 // This will serve images like:
@@ -79,16 +79,19 @@ app.use("/payments", paymentRoutes);
 app.use("/admin", adminRoutes);
 app.use(
   "/uploads",
-  express.static(uploadsA, {
+  express.static(uploadsFolder, {
     maxAge: "1d",
-    fallthrough: true,
+    fallthrough: true, // let next handler run if file missing
   })
 );
+
+// Helpful 404 JSON when file not found (useful for debugging)
 app.get("/uploads/:file", (req, res) => {
   res.status(404).json({
     success: false,
-    message: "Upload not found",
+    message: "Upload not found on server",
     file: req.params.file,
+    lookedAt: uploadsFolder,
   });
 });
 // ------------------------
