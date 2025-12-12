@@ -59,15 +59,15 @@ export default function Bookings() {
 
   // ⭐ CORRECT FIX FOR PHOTO URL ⭐
 // frontend: use env var or fallback to your Render URL
-const BACKEND_BASE = process.env.REACT_APP_API_URL || "https://svpg-backend.onrender.com";
+// const BACKEND_BASE = process.env.REACT_APP_API_URL || "https://svpg-backend.onrender.com";
 
-function photoUrl(p) {
-  if (!p) return "";
-  let clean = p.replace(/\\/g, "/");
-  clean = clean.replace(/^\.?\/*/, "");
-  if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
-  return `${BACKEND_BASE}/${clean}`;
-}
+// function photoUrl(p) {
+//   if (!p) return "";
+//   let clean = p.replace(/\\/g, "/");
+//   clean = clean.replace(/^\.?\/*/, "");
+//   if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
+//   return `${BACKEND_BASE}/${clean}`;
+// }
 
 
 
