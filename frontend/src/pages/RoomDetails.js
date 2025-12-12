@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import "../styles/RoomDetails.css";
+import photoUrl from "../utils/photoUrl";
 
 export default function RoomDetails() {
   const navigate = useNavigate();
