@@ -10,7 +10,8 @@ dotenv.config();
 // Fix dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
+const uploadsA = path.join(__dirname, "uploads");
+console.log("📁 Serving static uploads from:", uploadsA);
 // Initialize Express
 const app = express();
 
@@ -75,7 +76,20 @@ app.use("/users", userRoutes);
 app.use("/bookings", bookingRoutes);
 app.use("/payments", paymentRoutes);
 app.use("/admin", adminRoutes);
-
+app.use(
+  "/uploads",
+  express.static(uploadsA, {
+    maxAge: "1d",
+    fallthrough: true,
+  })
+);
+app.get("/uploads/:file", (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Upload not found",
+    file: req.params.file,
+  });
+});
 // ------------------------
 // MongoDB + Start Server
 // ------------------------
