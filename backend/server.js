@@ -16,7 +16,7 @@ const app = express();
 // Simple CORS (adapt allowed origins as needed)
 const allowedOrigins = [
   "https://svpg-hostel.onrender.com",
-  "https://svpghostel.vercel.app",
+  "https://svpg-hostel-sxi8.vercel.app/",
   "http://localhost:3000",
   "http://localhost:3001",
 ];
