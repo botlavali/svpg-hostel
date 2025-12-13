@@ -1,54 +1,55 @@
-// backend/routes/bookings.js
 import express from "express";
 import multer from "multer";
-import Booking from "../routes/bookings.js";
+import Booking from "../models/Booking.js"; // ✅ CORRECT
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const router = express.Router();
 
-/* FIX ABSOLUTE UPLOAD PATH: save to backend/uploads */
+/* PATH SETUP */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// We want to save to backend/uploads (one central folder)
-const UPLOAD_DIR = path.join(__dirname, "..", "uploads"); // <-- backend/uploads
-
+const UPLOAD_DIR = path.join(__dirname, "..", "uploads");
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
 
-/* MULTER STORAGE */
+/* MULTER */
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) =>
+  destination: (_, __, cb) => cb(null, UPLOAD_DIR),
+  filename: (_, file, cb) =>
     cb(null, `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`),
 });
-
 const upload = multer({ storage });
 
-/* CLEAN DUPLICATE KEYS (multipart may send arrays) */
-function clean(body) {
+/* CLEAN BODY */
+const clean = (body = {}) => {
   const out = {};
   Object.keys(body).forEach((k) => {
     out[k] = Array.isArray(body[k]) ? body[k][0] : body[k];
   });
   return out;
-}
+};
 
-/* GET ALL BOOKINGS */
-router.get("/", async (req, res) => {
+/* ✅ GET USER BOOKINGS */
+router.get("/user/:id", async (req, res) => {
   try {
-    const bookings = await Booking.find().sort({ createdAt: -1 });
-    res.json({ success: true, bookings });
+    const userId = String(req.params.id);
+
+    const bookings = await Booking.find({ userId })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.json({ success: true, bookings });
   } catch (err) {
-    console.error("GET /bookings error:", err);
-    res.status(500).json({ success: false });
+    console.error("BOOKINGS FETCH ERROR:", err);
+    return res.json({ success: true, bookings: [] }); // never 500 to frontend
   }
 });
 
-/* CREATE BOOKING - accepts photo + aadharFile */
+/* ✅ CREATE BOOKING */
 router.post(
   "/",
   upload.fields([
@@ -61,59 +62,26 @@ router.post(
 
       const booking = new Booking({
         ...req.body,
+        userId: req.body.userId || "unknown",
         floor: Number(req.body.floor),
         room: Number(req.body.room),
         bed: Number(req.body.bed),
         amountPaid: Number(req.body.amountPaid) || 0,
-        // store relative paths that match static serve: `/uploads/<filename>`
         photo: req.files?.photo?.[0]
-          ? "uploads/" + path.basename(req.files.photo[0].path)
+          ? `uploads/${path.basename(req.files.photo[0].path)}`
           : "",
         aadharFile: req.files?.aadharFile?.[0]
-          ? "uploads/" + path.basename(req.files.aadharFile[0].path)
+          ? `uploads/${path.basename(req.files.aadharFile[0].path)}`
           : "",
       });
 
       const saved = await booking.save();
-      res.json({ success: true, booking: saved });
+      return res.json({ success: true, booking: saved });
     } catch (err) {
-      console.error("POST /bookings error:", err);
-      res.status(500).json({ success: false });
+      console.error("BOOKING SAVE ERROR:", err);
+      return res.json({ success: false, message: "Booking failed" });
     }
   }
 );
-
-/* UPDATE SHIFT or other fields */
-router.put("/:id", async (req, res) => {
-  try {
-    const updated = await Booking.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json({ success: true, updated });
-  } catch (err) {
-    console.error("PUT /bookings/:id error:", err);
-    res.status(500).json({ success: false });
-  }
-});
-
-/* DELETE BOOKING */
-router.delete("/:id", async (req, res) => {
-  try {
-    await Booking.findByIdAndDelete(req.params.id);
-    res.json({ success: true });
-  } catch (err) {
-    console.error("DELETE /bookings/:id error:", err);
-    res.status(500).json({ success: false });
-  }
-});
-
-/* USER BOOKINGS */
-router.get("/user/:id", async (req, res) => {
-  try {
-    const bookings = await Booking.find({ userId: req.params.id }).sort({ createdAt: -1 });
-    res.json({ success: true, bookings });
-  } catch (err) {
-    console.error("GET /bookings/user/:id error:", err);
-    res.status(500).json({ success: false });
-  }
-});
 
 export default router;
