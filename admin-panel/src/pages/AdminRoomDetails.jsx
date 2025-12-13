@@ -35,11 +35,7 @@ export default function AdminRoomDetails() {
       setLoading(true);
       const res = await api.get("/bookings");
 
-      const payload = Array.isArray(res.data)
-        ? res.data
-        : res.data?.data || res.data?.bookings || [];
-
-      setBookings(payload);
+      setBookings(res.data.bookings || []);
     } catch (err) {
       console.error("Load error:", err);
       setBookings([]);
@@ -47,6 +43,7 @@ export default function AdminRoomDetails() {
       setLoading(false);
     }
   }
+
 
   const filtered = bookings.filter((b) => {
     const q = search.trim().toLowerCase();
@@ -70,51 +67,47 @@ export default function AdminRoomDetails() {
     }
   }
 
-  async function openShift(booking) {
-    try {
-      const res = await api.get("/bookings");
+ async function openShift(booking) {
+  try {
+    const all = bookings; // ✅ use already loaded data
 
-      const all = Array.isArray(res.data)
-        ? res.data
-        : res.data?.data || res.data?.bookings || [];
+    const allBeds = [];
 
-      const allBeds = [];
+    Object.entries(ROOM_STRUCTURE).forEach(([floor, rooms]) => {
+      rooms.forEach((bedsCount, idx) => {
+        const roomNo = idx + 1;
 
-      Object.entries(ROOM_STRUCTURE).forEach(([floor, rooms]) => {
-        rooms.forEach((bedsCount, idx) => {
-          const roomNo = idx + 1;
+        for (let bed = 1; bed <= bedsCount; bed++) {
+          const taken = all.find(
+            (x) =>
+              +x.floor === +floor &&
+              +x.room === roomNo &&
+              +x.bed === bed
+          );
 
-          for (let bed = 1; bed <= bedsCount; bed++) {
-            const taken = all.find(
-              (x) =>
-                +x.floor === +floor &&
-                +x.room === roomNo &&
-                +x.bed === bed
-            );
-
-            allBeds.push({
-              floor: Number(floor),
-              room: roomNo,
-              bed,
-              status: taken ? "booked" : "free",
-            });
-          }
-        });
+          allBeds.push({
+            floor: Number(floor),
+            room: roomNo,
+            bed,
+            status: taken ? "booked" : "free",
+          });
+        }
       });
+    });
 
-      const grouped = {};
+    const grouped = {};
+    allBeds.forEach((b) => {
+      grouped[b.floor] ??= {};
+      grouped[b.floor][b.room] ??= [];
+      grouped[b.floor][b.room].push(b);
+    });
 
-      allBeds.forEach((b) => {
-        grouped[b.floor] = grouped[b.floor] || {};
-        grouped[b.floor][b.room] = grouped[b.floor][b.room] || [];
-        grouped[b.floor][b.room].push(b);
-      });
-
-      setShiftData({ booking, grouped, selected: null });
-    } catch (err) {
-      alert("Could not load shift data");
-    }
+    setShiftData({ booking, grouped, selected: null });
+  } catch {
+    alert("Could not load shift data");
   }
+}
+
 
   function selectShiftBed(floor, room, bed) {
     setShiftData((s) => ({ ...s, selected: { floor, room, bed } }));
@@ -186,17 +179,17 @@ export default function AdminRoomDetails() {
     }
   }
 
-// frontend: use env var or fallback to your Render URL
-// frontend: use env var or fallback to your Render URL
-// const BACKEND_BASE = process.env.REACT_APP_API_URL || "https://svpg-backend.onrender.com";
+  // frontend: use env var or fallback to your Render URL
+  // frontend: use env var or fallback to your Render URL
+  // const BACKEND_BASE = process.env.REACT_APP_API_URL || "https://svpg-backend.onrender.com";
 
-// function photoUrl(p) {
-//   if (!p) return "";
-//   let clean = p.replace(/\\/g, "/");
-//   clean = clean.replace(/^\.?\/*/, "");
-//   if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
-//   return `${BACKEND_BASE}/${clean}`;
-// }
+  // function photoUrl(p) {
+  //   if (!p) return "";
+  //   let clean = p.replace(/\\/g, "/");
+  //   clean = clean.replace(/^\.?\/*/, "");
+  //   if (!clean.startsWith("uploads")) clean = "uploads/" + clean;
+  //   return `${BACKEND_BASE}/${clean}`;
+  // }
 
 
 
