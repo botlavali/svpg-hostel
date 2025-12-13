@@ -1,7 +1,7 @@
 // backend/routes/bookings.js
 import express from "express";
 import multer from "multer";
-import Booking from "../models/Booking.js";
+import Booking from "../routes/bookings.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -66,15 +66,12 @@ router.post(
         bed: Number(req.body.bed),
         amountPaid: Number(req.body.amountPaid) || 0,
         // store relative paths that match static serve: `/uploads/<filename>`
-photo: req.files?.photo?.[0]
-  ? `uploads/${req.files.photo[0].filename}`
-  : "",
-
-aadharFile: req.files?.aadharFile?.[0]
-  ? `uploads/${req.files.aadharFile[0].filename}`
-  : "",
-
-
+        photo: req.files?.photo?.[0]
+          ? "uploads/" + path.basename(req.files.photo[0].path)
+          : "",
+        aadharFile: req.files?.aadharFile?.[0]
+          ? "uploads/" + path.basename(req.files.aadharFile[0].path)
+          : "",
       });
 
       const saved = await booking.save();
