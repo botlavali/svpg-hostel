@@ -1,6 +1,7 @@
+// backend/routes/bookings.js
 import express from "express";
 import multer from "multer";
-import Booking from "../models/Booking.js"; // ✅ CORRECT
+import Booking from "../models/Booking.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -32,7 +33,11 @@ const clean = (body = {}) => {
   });
   return out;
 };
-/* ✅ ADMIN — GET ALL BOOKINGS */
+
+/* =====================================================
+   ✅ ADMIN — GET ALL BOOKINGS
+   This is what api.get("/bookings") hits
+===================================================== */
 router.get("/", async (req, res) => {
   try {
     const bookings = await Booking.find()
@@ -44,7 +49,7 @@ router.get("/", async (req, res) => {
       bookings,
     });
   } catch (err) {
-    console.error("ADMIN BOOKINGS FETCH ERROR:", err.message);
+    console.error("ADMIN BOOKINGS ERROR:", err);
     return res.json({
       success: true,
       bookings: [],
@@ -53,23 +58,57 @@ router.get("/", async (req, res) => {
 });
 
 
-/* ✅ GET USER BOOKINGS */
+/* ✅ DELETE BOOKING */
+router.delete("/:id", async (req, res) => {
+  try {
+    await Booking.findByIdAndDelete(req.params.id);
+    return res.json({ success: true });
+  } catch (err) {
+    console.error("DELETE BOOKING ERROR:", err);
+    return res.status(500).json({ success: false });
+  }
+});
+
+
+/* ✅ UPDATE BOOKING (SHIFT BED) */
+router.put("/:id", async (req, res) => {
+  try {
+    const updated = await Booking.findByIdAndUpdate(
+      req.params.id,
+      {
+        floor: req.body.floor,
+        room: req.body.room,
+        bed: req.body.bed,
+      },
+      { new: true }
+    );
+
+    return res.json({ success: true, booking: updated });
+  } catch (err) {
+    console.error("UPDATE BOOKING ERROR:", err);
+    return res.status(500).json({ success: false });
+  }
+});
+
+/* =====================================================
+   ✅ USER — GET OWN BOOKINGS
+===================================================== */
 router.get("/user/:id", async (req, res) => {
   try {
-    const userId = String(req.params.id);
-
-    const bookings = await Booking.find({ userId })
+    const bookings = await Booking.find({ userId: req.params.id })
       .sort({ createdAt: -1 })
       .lean();
 
     return res.json({ success: true, bookings });
   } catch (err) {
-    console.error("BOOKINGS FETCH ERROR:", err);
-    return res.json({ success: true, bookings: [] }); // never 500 to frontend
+    console.error("USER BOOKINGS ERROR:", err);
+    return res.json({ success: true, bookings: [] });
   }
 });
 
-/* ✅ CREATE BOOKING */
+/* =====================================================
+   ✅ CREATE BOOKING
+===================================================== */
 router.post(
   "/",
   upload.fields([
