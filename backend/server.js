@@ -1,4 +1,3 @@
-// backend/server.js
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -13,7 +12,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// CORS (keep your allowedOrigins)
+/* ---------------- CORS ---------------- */
 const allowedOrigins = [
   "https://svpghostel.vercel.app",
   "https://svpg-hostel.vercel.app",
@@ -27,39 +26,27 @@ app.use(
     origin: (origin, cb) => {
       if (!origin) return cb(null, true);
       if (allowedOrigins.includes(origin)) return cb(null, true);
-      console.log("❌ CORS Blocked:", origin);
-      return cb(new Error("Not allowed by CORS"));
+      return cb(new Error("CORS blocked"));
     },
     credentials: true,
-    methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS",
   })
 );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ------------------------
-// STATIC FILES (only uploads)
-// ------------------------
+/* ---------------- STATIC UPLOADS (FIX) ---------------- */
 const UPLOADS_DIR = path.join(__dirname, "uploads");
-console.log("📁 Serving static uploads from:", UPLOADS_DIR);
 
-// serve /uploads
-// serve uploads folder
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(
+  "/uploads",
+  express.static(UPLOADS_DIR, {
+    fallthrough: false,
+    maxAge: "1d",
+  })
+);
 
-
-// Helpful JSON 404 for missing files under /uploads
-app.get("/uploads/:file", (req, res) => {
-  // If express.static served the file, this handler will not run.
-  res.status(404).json({
-    success: false,
-    message: "Upload not found",
-    file: req.params.file,
-  });
-});
-
-// Import your routes AFTER static middleware (so uploads can be served)
+/* ---------------- ROUTES ---------------- */
 import userRoutes from "./routes/users.js";
 import bookingRoutes from "./routes/bookings.js";
 import paymentRoutes from "./routes/payments.js";
@@ -70,18 +57,23 @@ app.use("/bookings", bookingRoutes);
 app.use("/payments", paymentRoutes);
 app.use("/admin", adminRoutes);
 
-app.get("/", (req, res) => res.json({ success: true, msg: "SV PG Backend Running" }));
+app.get("/", (req, res) => {
+  res.json({ success: true, msg: "SV PG Backend Running" });
+});
 
+/* ---------------- DB ---------------- */
 const PORT = process.env.PORT || 5000;
-const MONGO = process.env.MONGO_URI || process.env.MONGO_URL;
+const MONGO = process.env.MONGO_URI;
 
 mongoose
   .connect(MONGO)
   .then(() => {
-    console.log("📦 MongoDB Connected ✔");
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    console.log("MongoDB Connected");
+    app.listen(PORT, () =>
+      console.log(`Server running on port ${PORT}`)
+    );
   })
   .catch((err) => {
-    console.error("❌ MongoDB error:", err);
+    console.error(err);
     process.exit(1);
   });
