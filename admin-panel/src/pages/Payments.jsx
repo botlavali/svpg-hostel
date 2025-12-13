@@ -15,9 +15,13 @@ export default function Payments() {
       try {
         const token = localStorage.getItem("adminToken");
 
-        const res = await api.get("/payments/all", {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await api.get("/admin/payments", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
+
+
 
         // backend returns grouped -> array of { userId, userName, phone, payments: [], totalAmount }
         const data = res.data.grouped || [];
@@ -131,13 +135,13 @@ export default function Payments() {
               {/* PAYMENTS LIST */}
               <div className="payments-scroll-area">
                 {(user.payments || []).map((p) => {
-                  const b = p.bookingId;
-
-                  // Room & Bed formatting
+                  // Room & Bed formatting (CORRECT)
                   let roomBed = "N/A";
-                  if (b && b.floor && b.room && b.bed) {
-                    roomBed = `${b.floor}${String(b.room).padStart(2, "0")} • Bed ${b.bed}`;
+
+                  if (p.roomNumber && p.bedNumber) {
+                    roomBed = `${p.roomNumber} • Bed ${p.bedNumber}`;
                   }
+
 
                   return (
                     <div key={p._id} className="payment-inner-box">
@@ -149,6 +153,7 @@ export default function Payments() {
                       <div className="pay-row">
                         <strong>Room/Bed:</strong> {roomBed}
                       </div>
+
 
                       <div className="pay-row">
                         <strong>Code:</strong> {p.code}

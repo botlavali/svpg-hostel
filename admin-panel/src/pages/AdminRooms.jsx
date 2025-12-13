@@ -49,6 +49,8 @@ export default function AdminRooms() {
           : [];
 
         setBookings(data);
+
+
       } catch (err) {
         console.error("Load error:", err);
       }
