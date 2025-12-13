@@ -67,17 +67,26 @@ router.post(
         amountPaid: Number(req.body.amountPaid) || 0,
         // store relative paths that match static serve: `/uploads/<filename>`
         photo: req.files?.photo?.[0]
+<<<<<<< HEAD
 
            photo: req.files?.photo?.[0]
   ? `uploads/${req.files.photo[0].filename}`
   : "",
+=======
+          ? `uploads/${req.files.photo[0].filename}`
+          : "",
 
-aadharFile: req.files?.aadharFile?.[0]
-  ? `uploads/${req.files.aadharFile[0].filename}`
-  : "",
+        aadharFile: req.files?.aadharFile?.[0]
+          ? `uploads/${req.files.aadharFile[0].filename}`
+          : "",
+>>>>>>> cb879a77 (Update bookings upload path fix)
 
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> cb879a77 (Update bookings upload path fix)
 
       });
 
