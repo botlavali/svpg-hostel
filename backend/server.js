@@ -1,86 +1,79 @@
-// backend/routes/bookings.js
 import express from "express";
-import multer from "multer";
-import Booking from "../models/Booking.js";
-import fs from "fs";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const router = express.Router();
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const UPLOAD_DIR = path.join(__dirname, "..", "uploads");
+const app = express();
 
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
+/* ---------------- CORS ---------------- */
+const allowedOrigins = [
+  "https://svpghostel.vercel.app",
+  "https://svpg-hostel.vercel.app",
+  "https://svpg-hostel-sxi8.vercel.app",
+  "http://localhost:3000",
+  "http://localhost:3001",
+];
 
-const storage = multer.diskStorage({
-  destination: (_, __, cb) => cb(null, UPLOAD_DIR),
-  filename: (_, file, cb) =>
-    cb(null, `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`),
-});
-
-const upload = multer({ storage });
-
-const clean = (body) => {
-  const out = {};
-  for (const k in body) {
-    out[k] = Array.isArray(body[k]) ? body[k][0] : body[k];
-  }
-  return out;
-};
-
-router.get("/", async (req, res) => {
-  const bookings = await Booking.find().sort({ createdAt: -1 });
-  res.json({ success: true, bookings });
-});
-
-router.post(
-  "/",
-  upload.fields([
-    { name: "photo", maxCount: 1 },
-    { name: "aadharFile", maxCount: 1 },
-  ]),
-  async (req, res) => {
-    req.body = clean(req.body);
-
-    const booking = new Booking({
-      ...req.body,
-      floor: Number(req.body.floor),
-      room: Number(req.body.room),
-      bed: Number(req.body.bed),
-      amountPaid: Number(req.body.amountPaid) || 0,
-      photo: req.files?.photo?.[0]
-        ? `uploads/${req.files.photo[0].filename}`
-        : "",
-      aadharFile: req.files?.aadharFile?.[0]
-        ? `uploads/${req.files.aadharFile[0].filename}`
-        : "",
-    });
-
-    const saved = await booking.save();
-    res.json({ success: true, booking: saved });
-  }
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      if (allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error("CORS blocked"));
+    },
+    credentials: true,
+  })
 );
 
-router.put("/:id", async (req, res) => {
-  const updated = await Booking.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+/* ---------------- STATIC UPLOADS (FIX) ---------------- */
+const UPLOADS_DIR = path.join(__dirname, "uploads");
+
+app.use(
+  "/uploads",
+  express.static(UPLOADS_DIR, {
+    fallthrough: false,
+    maxAge: "1d",
+  })
+);
+
+/* ---------------- ROUTES ---------------- */
+import userRoutes from "./routes/users.js";
+import bookingRoutes from "./routes/bookings.js";
+import paymentRoutes from "./routes/payments.js";
+import adminRoutes from "./routes/admin.js";
+
+app.use("/users", userRoutes);
+app.use("/bookings", bookingRoutes);
+app.use("/payments", paymentRoutes);
+app.use("/admin", adminRoutes);
+
+app.get("/", (req, res) => {
+  res.json({ success: true, msg: "SV PG Backend Running" });
+});
+
+/* ---------------- DB ---------------- */
+const PORT = process.env.PORT || 5000;
+const MONGO = process.env.MONGO_URI;
+
+mongoose
+  .connect(MONGO)
+  .then(() => {
+    console.log("MongoDB Connected");
+    app.listen(PORT, () =>
+      console.log(`Server running on port ${PORT}`)
+    );
+  })
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
   });
-  res.json({ success: true, updated });
-});
-
-router.delete("/:id", async (req, res) => {
-  await Booking.findByIdAndDelete(req.params.id);
-  res.json({ success: true });
-});
-
-router.get("/user/:id", async (req, res) => {
-  const bookings = await Booking.find({ userId: req.params.id });
-  res.json({ success: true, bookings });
-});
-
-export default router;
