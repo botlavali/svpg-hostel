@@ -1,4 +1,3 @@
-// routes/admin.js
 import express from "express";
 import jwt from "jsonwebtoken";
 import Booking from "../models/Booking.js";
@@ -7,22 +6,21 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-/* --------------------------------------
-    SIMPLE ADMIN LOGIN
---------------------------------------- */
+/* =====================================================
+   ADMIN LOGIN
+===================================================== */
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
 
-  // Hardcoded admin credentials
   if (email === "admin@gmail.com" && password === "admin123") {
-    const adminData = {
+    const admin = {
       name: "Admin",
-      email: "admin@gmail.com",
+      email,
       role: "admin",
     };
 
     const token = jwt.sign(
-      adminData,
+      admin,
       process.env.ADMIN_JWT_SECRET || "AdminSecretKey",
       { expiresIn: "7d" }
     );
@@ -30,7 +28,7 @@ router.post("/login", (req, res) => {
     return res.json({
       success: true,
       token,
-      admin: adminData, // FRONTEND NEEDS THIS
+      admin,
     });
   }
 
@@ -39,18 +37,18 @@ router.post("/login", (req, res) => {
     .json({ success: false, message: "Invalid credentials" });
 });
 
-/* --------------------------------------
-    ADMIN AUTH MIDDLEWARE
---------------------------------------- */
+/* =====================================================
+   ADMIN AUTH MIDDLEWARE
+===================================================== */
 function adminAuth(req, res, next) {
-  const header = req.headers.authorization || "";
+  const auth = req.headers.authorization || "";
 
-  if (!header.startsWith("Bearer ")) {
+  if (!auth.startsWith("Bearer ")) {
     return res.status(401).json({ success: false, message: "Unauthorized" });
   }
 
   try {
-    const token = header.split(" ")[1];
+    const token = auth.split(" ")[1];
     jwt.verify(token, process.env.ADMIN_JWT_SECRET || "AdminSecretKey");
     next();
   } catch {
@@ -58,25 +56,47 @@ function adminAuth(req, res, next) {
   }
 }
 
-/* --------------------------------------
-       PAYMENTS LIST
---------------------------------------- */
+/* =====================================================
+   ✅ PAYMENTS (USED BY ADMIN PANEL)
+   URL: /admin/payments
+===================================================== */
 router.get("/payments", adminAuth, async (req, res) => {
   try {
     const payments = await Payment.find()
-      .populate("bookingId")
-      .populate("userId")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
-    res.json({ success: true, payments });
-  } catch {
+    // GROUP PAYMENTS BY USER
+    const groupedMap = {};
+
+    payments.forEach((p) => {
+      if (!groupedMap[p.userId]) {
+        groupedMap[p.userId] = {
+          userId: p.userId,
+          userName: p.name || "Unknown",
+          phone: p.phone || "",
+          payments: [],
+          totalAmount: 0,
+        };
+      }
+
+      groupedMap[p.userId].payments.push(p);
+      groupedMap[p.userId].totalAmount += p.amount || 0;
+    });
+
+    const grouped = Object.values(groupedMap);
+
+    res.json({ success: true, grouped });
+  } catch (err) {
+    console.error("ADMIN PAYMENTS ERROR:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
-/* --------------------------------------
-       DASHBOARD OVERVIEW
---------------------------------------- */
+
+/* =====================================================
+   DASHBOARD OVERVIEW
+===================================================== */
 router.get("/overview", adminAuth, async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
@@ -87,18 +107,20 @@ router.get("/overview", adminAuth, async (req, res) => {
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
 
-    const totalRevenue =
-      revenueAgg.length > 0 ? revenueAgg[0].total : 0;
+    const totalRevenue = revenueAgg[0]?.total || 0;
 
-    res.json({
+    return res.json({
       success: true,
       totalUsers,
       totalBookings,
       totalPayments,
       totalRevenue,
     });
-  } catch {
-    res.status(500).json({ success: false, message: "Server error" });
+  } catch (err) {
+    console.error("ADMIN OVERVIEW ERROR:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error" });
   }
 });
 
