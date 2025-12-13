@@ -1,24 +1,24 @@
-// backend/models/Booking.js
 import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    phone: { type: String, required: true },
+    name: { type: String, default: "" },
+    phone: { type: String, default: "" },
     altPhone: { type: String, default: "" },
-    email: { type: String, required: true },
+    email: { type: String, default: "" },
 
-    // Make Aadhaar optional to avoid blocking admin quick bookings.
-    aadharNumber: { type: String, required: false, default: "" },
-
-    joinDate: { type: String, required: true },
+    aadharNumber: { type: String, default: "" },
+    joinDate: { type: String, default: "" },
 
     floor: { type: Number, required: true },
     room: { type: Number, required: true },
     bed: { type: Number, required: true },
 
-    // Keep userId as string (flexible)
-    userId: { type: String, default: "admin" },
+    userId: {
+      type: String,
+      default: "unknown",
+      index: true,
+    },
 
     amountPaid: { type: Number, default: 0 },
 
@@ -27,5 +27,7 @@ const bookingSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+bookingSchema.index({ floor: 1, room: 1, bed: 1 });
 
 export default mongoose.model("Booking", bookingSchema);
