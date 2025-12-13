@@ -32,6 +32,26 @@ const clean = (body = {}) => {
   });
   return out;
 };
+/* ✅ ADMIN — GET ALL BOOKINGS */
+router.get("/", async (req, res) => {
+  try {
+    const bookings = await Booking.find()
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.json({
+      success: true,
+      bookings,
+    });
+  } catch (err) {
+    console.error("ADMIN BOOKINGS FETCH ERROR:", err.message);
+    return res.json({
+      success: true,
+      bookings: [],
+    });
+  }
+});
+
 
 /* ✅ GET USER BOOKINGS */
 router.get("/user/:id", async (req, res) => {
