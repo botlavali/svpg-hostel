@@ -67,11 +67,13 @@ router.post(
         amountPaid: Number(req.body.amountPaid) || 0,
         // store relative paths that match static serve: `/uploads/<filename>`
         photo: req.files?.photo?.[0]
-          ? "uploads/" + path.basename(req.files.photo[0].path)
-          : "",
-        aadharFile: req.files?.aadharFile?.[0]
-          ? "uploads/" + path.basename(req.files.aadharFile[0].path)
-          : "",
+           ? `uploads/${req.files.photo[0].filename}`
+           : "",
+
+      aadharFile: req.files?.aadharFile?.[0]
+           ? `uploads/${req.files.aadharFile[0].filename}`
+           : "",
+
       });
 
       const saved = await booking.save();
