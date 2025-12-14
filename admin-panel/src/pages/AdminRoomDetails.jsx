@@ -2,8 +2,11 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import AdminLayout from "../layouts/AdminLayout";
-import "./AdminRooms.css";
+import "./AdminRoomDetails.css";
+
 import photoUrl from "../utils/photoUrl";
+
+
 
 export default function AdminRoomDetails() {
   const [bookings, setBookings] = useState([]);
@@ -67,46 +70,46 @@ export default function AdminRoomDetails() {
     }
   }
 
- async function openShift(booking) {
-  try {
-    const all = bookings; // ✅ use already loaded data
+  async function openShift(booking) {
+    try {
+      const all = bookings; // ✅ use already loaded data
 
-    const allBeds = [];
+      const allBeds = [];
 
-    Object.entries(ROOM_STRUCTURE).forEach(([floor, rooms]) => {
-      rooms.forEach((bedsCount, idx) => {
-        const roomNo = idx + 1;
+      Object.entries(ROOM_STRUCTURE).forEach(([floor, rooms]) => {
+        rooms.forEach((bedsCount, idx) => {
+          const roomNo = idx + 1;
 
-        for (let bed = 1; bed <= bedsCount; bed++) {
-          const taken = all.find(
-            (x) =>
-              +x.floor === +floor &&
-              +x.room === roomNo &&
-              +x.bed === bed
-          );
+          for (let bed = 1; bed <= bedsCount; bed++) {
+            const taken = all.find(
+              (x) =>
+                +x.floor === +floor &&
+                +x.room === roomNo &&
+                +x.bed === bed
+            );
 
-          allBeds.push({
-            floor: Number(floor),
-            room: roomNo,
-            bed,
-            status: taken ? "booked" : "free",
-          });
-        }
+            allBeds.push({
+              floor: Number(floor),
+              room: roomNo,
+              bed,
+              status: taken ? "booked" : "free",
+            });
+          }
+        });
       });
-    });
 
-    const grouped = {};
-    allBeds.forEach((b) => {
-      grouped[b.floor] ??= {};
-      grouped[b.floor][b.room] ??= [];
-      grouped[b.floor][b.room].push(b);
-    });
+      const grouped = {};
+      allBeds.forEach((b) => {
+        grouped[b.floor] ??= {};
+        grouped[b.floor][b.room] ??= [];
+        grouped[b.floor][b.room].push(b);
+      });
 
-    setShiftData({ booking, grouped, selected: null });
-  } catch {
-    alert("Could not load shift data");
+      setShiftData({ booking, grouped, selected: null });
+    } catch {
+      alert("Could not load shift data");
+    }
   }
-}
 
 
   function selectShiftBed(floor, room, bed) {
@@ -312,7 +315,7 @@ export default function AdminRoomDetails() {
               <label>Admin Code</label>
               <input
                 className="form-control mb-2"
-                placeholder="Enter MOHANSVPG"
+                placeholder="Enter svpg code"
                 value={payModal.code}
                 onChange={(e) =>
                   setPayModal((p) => ({
@@ -453,3 +456,4 @@ export default function AdminRoomDetails() {
     </AdminLayout>
   );
 }
+
