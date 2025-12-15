@@ -1,292 +1,339 @@
-/* frontend/src/styles/Rooms.css
-   Redesigned styles for Rooms page
-   - new color palette (teal/purple)
-   - smaller bed icons
-   - modern, stylish top-form + payment panel
-   - inline success card displayed at top of form area
-   - responsive adjustments
-*/
+/* =====================================================
+   ROOMS PAGE – CLEAN & FIXED VERSION
+   ===================================================== */
 
-/* =========================
-   THEME VARIABLES (new palette)
-   ========================= */
+/* ---------- THEME VARIABLES ---------- */
 :root {
   --bg-dark: #07080a;
-  --panel-bg: rgba(255,255,255,0.03);
-  --glass-strong: rgba(255,255,255,0.06);
-  --card-border: rgba(255,255,255,0.10);
-  --accent-1: #2dd4bf;   /* teal */
-  --accent-2: #7c3aed;   /* purple */
-  --accent-3: #06b6d4;   /* cyan */
+  --panel-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(255, 255, 255, 0.10);
+
+  --accent-1: #2dd4bf; /* teal */
+  --accent-2: #7c3aed; /* purple */
   --danger: #ff4666;
-  --muted-white: rgba(255,255,255,0.88);
-  --soft-white: rgba(255,255,255,0.92);
+
+  --soft-white: rgba(255, 255, 255, 0.92);
+  --muted-white: rgba(255, 255, 255, 0.82);
 }
 
-/* =========================
-   BASE
-   ========================= */
-html, body {
-  height: 100%;
-  background: linear-gradient(180deg, var(--bg-dark), #0a0b0d) !important;
+/* ---------- BASE ---------- */
+html,
+body {
+  background: linear-gradient(180deg, var(--bg-dark), #0a0b0d);
   margin: 0;
-  font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
   color: var(--soft-white);
 }
+
 .rooms-wrapper {
   min-height: 100vh;
   padding: 1.25rem;
-  background: rgba(8,9,11,0.55);
-  backdrop-filter: blur(8px);
 }
 
-/* make everything inside readable */
-.rooms-wrapper, .rooms-wrapper * { color: var(--soft-white); box-sizing: border-box; }
-
-/* =========================
-   SIDEBAR
-   ========================= */
+/* ---------- SIDEBAR ---------- */
 .sidebar-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 14px;
   border: 1px solid var(--card-border);
-  padding: 1rem;
-  transition: transform .22s ease, box-shadow .22s ease;
-}
-.sidebar-card:hover { transform: translateY(-6px); box-shadow: 0 10px 30px rgba(0,0,0,0.6); border-color: rgba(45,212,191,0.16); }
-.profile-circle {
-  width: 76px; height: 76px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  display:flex; align-items:center; justify-content:center; font-weight:800; font-size:26px;
-  box-shadow: 0 8px 20px rgba(124,58,237,0.12);
 }
 
-/* =========================
-   HEADINGS / TITLES
-   ========================= */
+.profile-circle {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 26px;
+}
+
+/* ---------- TITLES ---------- */
 .page-title {
   font-size: 1.9rem;
+  font-weight: 900;
+}
+
+.floor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.floor-title {
   font-weight: 800;
-  margin-bottom: 1rem;
-  color: var(--soft-white);
-  letter-spacing: -0.3px;
-}
-.floor-title { font-weight: 800; font-size: 1.05rem; margin: 0; color: var(--soft-white); }
-
-/* floor header container */
-.floor-header { display:flex; align-items:center; justify-content:space-between; gap: 12px; margin-bottom: .5rem; }
-
-/* highlight the active floor area */
-.floor-active {
-  border-radius: 12px;
-  padding: 8px;
-  background: linear-gradient(90deg, rgba(45,212,191,0.03), rgba(124,58,237,0.02));
-  border: 1px solid rgba(45,212,191,0.06);
 }
 
-/* =========================
-   ROOM CARD
-   ========================= */
+.badge-selected {
+  background: rgba(124, 58, 237, 0.18);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* ---------- ROOM CARD ---------- */
 .room-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.06);
-  min-height: 140px;
-  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: transform 0.2s ease;
 }
-.room-card:hover { transform: translateY(-6px); box-shadow: 0 10px 28px rgba(11,12,14,0.6); border-color: rgba(124,58,237,0.12); }
-.room-card .badge { font-weight:700; font-size:.82rem; padding:.45rem .6rem; border-radius: 8px; }
 
-/* =========================
-   BED ICONS (SMALLER)
-   ========================= */
+.room-card:hover {
+  transform: translateY(-4px);
+}
+
+/* ---------- BED ICON ---------- */
+/* ---------- BED ICON (FINAL BLACK–WHITE) ---------- */
 .bed-icon {
   width: 64px;
   height: 60px;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.015);
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction: column;
-  padding: 6px;
-  gap:4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
   cursor: pointer;
-  transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+  transition: all 0.2s ease;
 }
-.bed-icon-inner { display:flex; flex-direction:column; align-items:center; }
-.bed-icon-emoji { font-size:20px; }
-.bed-label { font-size:.78rem; color: var(--muted-white); font-weight:700; }
 
-/* bed states - fresh colors */
-.bed-icon.available { border-color: rgba(6,182,212,0.28); background: linear-gradient(180deg, rgba(6,182,212,0.03), rgba(124,58,237,0.02)); }
+/* AVAILABLE */
+.bed-icon.available {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.bed-icon.available:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(1.06);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.8);
+}
+
+/* SELECTED (WHITE GLOW) */
 .bed-icon.selected {
-  background: linear-gradient(180deg, rgba(124,58,237,0.95), rgba(45,212,191,0.95));
-  color: #04111a;
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 8px 26px rgba(124,58,237,0.14);
+  background: #ffffff;
+  color: #000;
+  border-color: #fff;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.7),
+    0 12px 32px rgba(255, 255, 255, 0.35);
   transform: translateY(-4px);
 }
+
+/* BOOKED (GRAY – NO RED) */
 .bed-icon.booked {
-  background: linear-gradient(180deg, rgba(255,71,102,0.95), rgba(255,71,102,0.85));
-  border-color: rgba(255,71,102,0.9);
-  color: #fff;
-  cursor:not-allowed;
+  background: rgba(237, 62, 62, 0.911);
+  border-color: rgba(255, 255, 255, 0.078);
+  color: rgb(255, 255, 255);
+  cursor: not-allowed;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
-.bed-icon:hover:not(.booked) { transform: scale(1.04); box-shadow: 0 10px 26px rgba(0,0,0,0.45); }
 
-/* keyboard focus */
-.bed-icon:focus { outline: none; box-shadow: 0 0 0 6px rgba(45,212,191,0.09); }
 
-/* =========================
-   TOP INLINE FORM (STYLISH)
-   ========================= */
+
+
+/* ---------- INLINE FORM / PAYMENT ---------- */
 .top-form-card {
-  width:100%;
+  width: 100%;
   max-width: 1080px;
-  margin: 0 0 16px 0;
+  margin-bottom: 16px;
   padding: 14px;
   border-radius: 14px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 14px 36px rgba(2,6,23,0.55);
-  animation: formIn .28s cubic-bezier(.2,.9,.2,1) both;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  animation: slideDown 0.25s ease both;
 }
-@keyframes formIn { from { transform: translateY(-8px); opacity:0 } to { transform: translateY(0); opacity:1 } }
 
-/* inputs */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .top-form-card .form-control {
-  background: rgba(10,12,14,0.5);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--soft-white);
-  padding: .6rem .7rem;
   border-radius: 10px;
-  box-shadow: inset 0 -1px 0 rgba(0,0,0,0.25);
-  transition: box-shadow .12s ease, transform .12s ease;
-  font-weight:600;
-}
-.top-form-card .form-control:focus {
-  box-shadow: 0 6px 22px rgba(124,58,237,0.12);
-  transform: translateY(-1px);
-  border-color: rgba(124,58,237,0.18);
-  outline: none;
 }
 
-/* labels */
-.top-form-card label { font-weight:700; color: rgba(255,255,255,0.88); font-size:.86rem; }
-
-/* form buttons */
-.top-form-card .btn {
+/* ---------- BUTTONS ---------- */
+.btn {
   border-radius: 12px;
-  padding: .6rem .85rem;
-  font-weight:800;
-  letter-spacing: .3px;
-}
-.top-form-card .btn-primary { background: linear-gradient(90deg,var(--accent-2),var(--accent-1)); border: none; color: #031019; box-shadow: 0 10px 26px rgba(124,58,237,0.12); }
-.top-form-card .btn-outline-secondary { background: transparent; border: 1px solid rgba(255,255,255,0.06); color: var(--soft-white); }
-
-/* compact on small screens */
-@media (max-width: 576px) {
-  .bed-icon { width: 46%; margin-bottom: 8px; }
-  .top-form-card { padding: 12px; }
-  .top-form-card .form-control { font-size: .95rem; }
+  font-weight: 800;
 }
 
-/* =========================
-   PAYMENT INLINE (variant)
-   ========================= */
-.payment-inline { border-left: 3px solid rgba(124,58,237,0.9); padding-left: 12px; }
-
-/* payment value cards */
-.payment-inline .form-control[aria-readonly] {
-  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
-  font-weight:800;
-  border-radius: 10px;
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-2), var(--accent-1));
+  border: none;
+  color: #021018;
 }
 
-/* =========================
-   INLINE SUCCESS CARD (TOP OF FORM)
-   - appears above forms inside the same floor block
-   ========================= */
+.btn-outline-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--soft-white);
+}
+
+/* ---------- INLINE SUCCESS CARD (FINAL) ---------- */
 .inline-success-card {
-  display:flex;
-  align-items:center;
-  gap: 12px;
-  padding: 12px 14px;
-  margin: 0 0 12px 0;
-  border-radius: 12px;
-  background: linear-gradient(180deg, rgba(45,212,191,0.06), rgba(124,58,237,0.04));
-  border: 1px solid rgba(45,212,191,0.12);
-  box-shadow: 0 12px 30px rgba(4,8,12,0.55);
-  animation: successIn .28s cubic-bezier(.2,.9,.2,1) both;
-}
-@keyframes successIn { from { transform: translateY(-6px); opacity:0 } to { transform: translateY(0); opacity:1 } }
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  border-radius: 14px;
 
-.inline-success-card .success-left {
-  width:64px; height:64px; border-radius: 12px;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:900; color:#001419;
-  box-shadow: 0 10px 24px rgba(124,58,237,0.12);
-}
-.inline-success-card .success-body h4 { margin:0; font-size:1rem; font-weight:900; color:#001419; }
-.inline-success-card .success-body p { margin:4px 0 0 0; color: rgba(255,255,255,0.92); font-weight:600; font-size:.92rem; }
+  background: linear-gradient(
+    135deg,
+    rgba(45, 212, 191, 0.22),
+    rgba(124, 58, 237, 0.22)
+  );
 
-.inline-success-card .success-action .btn {
-  padding: .45rem .7rem; border-radius:10px;
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+
+  animation: successFade 0.3s ease both;
 }
 
-/* small internal confetti */
-.inline-success-card .inline-confetti { position:absolute; right:12px; top:-6px; width:120px; height:60px; pointer-events:none; }
-.inline-success-card .inline-confetti span { position:absolute; width:8px; height:12px; border-radius:2px; opacity:0.95; animation:inlineConf 1.6s linear forwards; }
-.inline-success-card .inline-confetti .c1 { background:#ff6b6b; left:6%; animation-delay:0.0s; transform:rotate(10deg); }
-.inline-success-card .inline-confetti .c2 { background:#ffd166; left:22%; animation-delay:0.06s; transform:rotate(-12deg); }
-.inline-success-card .inline-confetti .c3 { background:#2dd4bf; left:42%; animation-delay:0.12s; transform:rotate(8deg); }
-.inline-success-card .inline-confetti .c4 { background:#7c3aed; left:62%; animation-delay:0.18s; transform:rotate(-8deg); }
-.inline-success-card .inline-confetti .c5 { background:#06b6d4; left:80%; animation-delay:0.24s; transform:rotate(12deg); }
-@keyframes inlineConf { 0% { transform: translateY(-6px) rotate(0deg); opacity:1 } 100% { transform: translateY(36px) rotate(360deg); opacity:0.95 } }
-
-/* =========================
-   GLOBAL SUCCESS OVERLAY (kept)
-   ========================= */
-.success-overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:20000; pointer-events:none; }
-.success-popup.glass { pointer-events:auto; width:320px; padding:28px; border-radius:14px; background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.12); box-shadow:0 20px 50px rgba(0,0,0,0.6); animation: popScale .28s both; }
-@keyframes popScale { from { transform: scale(.96); opacity:0 } to { transform: scale(1); opacity:1 } }
-.success-popup .success-icon { font-size:44px; margin-bottom:8px; filter: drop-shadow(0 6px 18px rgba(45,212,191,0.18)); }
-
-/* =========================
-   BUTTONS (global tweak)
-   ========================= */
-.btn { font-weight:800; border-radius:12px; letter-spacing:.3px; transition: transform .12s ease, box-shadow .12s ease; }
-.btn:active { transform: translateY(1px) }
-.btn-outline-secondary { background: transparent; border: 1px solid rgba(255,255,255,0.06); color:var(--soft-white); }
-
-/* =========================
-   LAYOUT & RESPONSIVE
-   ========================= */
-.container-fluid { max-width:1360px; margin:0 auto; padding: 0 1rem; }
-.row.g-3 { gap: 1rem; }
-
-/* responsive smaller beds & form spacing */
-@media (max-width: 992px) {
-  .bed-icon { width: 60px; height:56px; }
-  .room-card { min-height: 130px; }
+.inline-success-card .success-icon {
+  font-size: 32px;
 }
+
+.inline-success-card h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #001419;
+}
+
+.inline-success-card p {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+@keyframes successFade {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 768px) {
-  .bed-icon { width: 46%; margin-bottom:8px; }
-  .top-form-card { padding:12px; }
-  .inline-success-card { padding:10px; gap:8px; }
+  .bed-icon {
+    width: 48%;
+    margin-bottom: 8px;
+  }
+}
+/* =====================================================
+   UI POLISH – BLACK & WHITE PREMIUM HOVERS
+   ===================================================== */
+
+/* ---------- GLOBAL SOFT GLOW ---------- */
+.rooms-wrapper {
+  background:
+    radial-gradient(circle at top,
+      rgba(255, 255, 255, 0.04),
+      rgba(0, 0, 0, 0.9)),
+    linear-gradient(180deg, #060708, #0a0b0d);
 }
 
-/* =========================
-   UTILITIES
-   ========================= */
-.fw-bold { font-weight:800; }
-.fw-semibold { font-weight:700; }
-.text-secondary { color: rgba(255,255,255,0.82); }
-.badge-selected { background: linear-gradient(90deg, rgba(124,58,237,0.08), rgba(45,212,191,0.06)); padding:6px 10px; border-radius:999px; font-weight:800; color:var(--soft-white); border:1px solid rgba(255,255,255,0.04); font-size:.88rem; }
+/* ---------- ROOM CARD HOVER ---------- */
+.room-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
 
-/* helpful small touches */
-.top-form-card .help-text { font-size:.86rem; color: rgba(255,255,255,0.8); margin-top:.25rem; }
+.room-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+/* ---------- BED ICON HOVER ---------- */
+.bed-icon {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.bed-icon.available:hover {
+  transform: scale(1.06);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* selected bed glow */
+.bed-icon.selected {
+  box-shadow:
+    0 12px 36px rgba(124, 58, 237, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- FORM INPUT HOVER ---------- */
+.top-form-card .form-control:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- BUTTON HOVERS ---------- */
+.btn-primary {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 36px rgba(124, 58, 237, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.btn-outline-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ---------- INLINE SUCCESS CARD PREMIUM ---------- */
+.inline-success-card {
+  background:
+    linear-gradient(135deg,
+      rgba(255, 255, 255, 0.92),
+      rgba(230, 230, 230, 0.88));
+  color: #050505;
+}
+
+.inline-success-card p {
+  color: rgba(0, 0, 0, 0.75);
+}
+
+/* ---------- SIDEBAR CARD HOVER ---------- */
+.sidebar-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.sidebar-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 20px 46px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* ---------- BADGE SOFT HOVER ---------- */
+.badge-selected {
+  transition: background 0.2s ease;
+}
+
+.badge-selected:hover {
+  background: rgba(255, 255, 255, 0.18);
+}

@@ -1,13 +1,14 @@
 
 // frontend/src/pages/Rooms.js
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import "../styles/Rooms.css";
 
+
 export default function Rooms() {
   const navigate = useNavigate();
-
+  const formRef = useRef(null);
   const [user, setUser] = useState(null);
   const [bookedBeds, setBookedBeds] = useState([]);
   const [selectedBeds, setSelectedBeds] = useState([]);
@@ -31,6 +32,8 @@ export default function Rooms() {
 
   // Active floor to render the inline top form / payment under
   const [activeFloor, setActiveFloor] = useState(null);
+  const [bookedPopup, setBookedPopup] = useState(false);
+  const [bookedInfo, setBookedInfo] = useState(null);
 
   // -----------------------------
   // LOGIN CHECK
@@ -38,6 +41,7 @@ export default function Rooms() {
   useEffect(() => {
     const u = localStorage.getItem("user");
     const accepted = localStorage.getItem("acceptedRules");
+
 
     if (!u) {
       navigate("/login");
@@ -70,13 +74,16 @@ export default function Rooms() {
 
     try {
       const res = await api.get(`/bookings/user/${user._id}`);
-      const data = Array.isArray(res.data?.bookings) ? res.data.bookings : [];
+      const data = Array.isArray(res.data?.bookings)
+        ? res.data.bookings
+        : [];
       setBookedBeds(data);
     } catch (err) {
       console.error("Load bookings failed:", err);
       setBookedBeds([]);
     }
   }, [user]);
+
 
   useEffect(() => {
     if (user?._id) loadBookings();
@@ -106,7 +113,25 @@ export default function Rooms() {
     selectedBeds.some((s) => s.floor === f && s.room === r && s.bed === b);
 
   const toggleBed = (floor, room, bed) => {
-    if (findBooking(floor, room, bed)) return alert("❌ Already booked!");
+    if (findBooking(floor, room, bed)) {
+      const info = findBooking(floor, room, bed);
+
+      setBookedInfo({
+        floor,
+        room,
+        bed,
+        name: info?.name || "Someone",
+      });
+
+      setBookedPopup(true);
+
+      setTimeout(() => {
+        setBookedPopup(false);
+      }, 2000);
+
+      return;
+    }
+
 
     const key = `${floor}-${room}-${bed}`;
 
@@ -129,6 +154,14 @@ export default function Rooms() {
     setSelectedBeds((prev) => [...prev, { key, floor, room, bed }]);
     setFormVisible(true);
     setActiveFloor(String(floor));
+
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 120);
+
   };
 
   const handleFormChange = (e) => {
@@ -174,7 +207,7 @@ export default function Rooms() {
   const handlePayNow = async () => {
     try {
       if (!pendingBookingData) {
-        alert("No booking data available.");
+
         return;
       }
 
@@ -209,7 +242,7 @@ export default function Rooms() {
       }
 
       if (createdBookings.length === 0)
-        return alert("No bookings created.");
+        return
 
       const firstBooking = createdBookings[0];
 
@@ -228,21 +261,32 @@ export default function Rooms() {
         return alert(payRes.data?.message || "Payment failed");
 
       setSuccessPopup(true);
-
-      // small cleanup for UI
-      setSelectedBeds([]);
-      setPendingBookingData(null);
-      setFormVisible(false);
+      setBookedPopup(false);
+      setBookedInfo(null);
+      // keep floor active so success card stays visible
       setShowPaymentInfo(false);
-      setActiveFloor(null);
 
+      // scroll to success message
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+
+      // auto redirect after few seconds
       setTimeout(() => {
         setSuccessPopup(false);
+        setSelectedBeds([]);
+        setPendingBookingData(null);
+        setFormVisible(false);
+        setActiveFloor(null);
         navigate("/roomdetails");
-      }, 2000);
+      }, 3000);
+
     } catch (err) {
       console.error("Booking error:", err);
-      alert("Booking failed (see console)");
+
     }
   };
 
@@ -305,9 +349,30 @@ export default function Rooms() {
                   )}
                 </div>
 
+
+                {/* BOOKED BED POPUP */}
+                {/* BOOKED BED POPUP */}
+                {bookedPopup && bookedInfo && !successPopup && (
+                  <div className="success-overlay">
+                    <div className="success-popup glass booked">
+
+
+                      <div className="success-icon">🔒</div>
+                      <h4>Bed Already Booked</h4>
+                      <p className="muted">
+                        Floor {bookedInfo.floor}, Room{" "}
+                        {bookedInfo.floor}
+                        {String(bookedInfo.room).padStart(2, "0")} – Bed {bookedInfo.bed}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+
                 {/* INLINE BOOKING FORM (shows under floor title when formVisible & on this floor) */}
                 {formVisible && activeFloor === String(floor) && (
-                  <div className="top-form-card mb-3">
+                  <div ref={formRef} className="top-form-card mb-3">
+
                     <form className="row g-2" onSubmit={handleSubmit}>
                       <div className="col-md-3">
                         <label className="form-label fw-semibold">Full Name</label>
@@ -357,7 +422,9 @@ export default function Rooms() {
                 )}
 
                 {/* INLINE PAYMENT CARD (appears just below the booking form when showPaymentInfo && same floor) */}
-                {showPaymentInfo && activeFloor === String(floor) && (
+                {showPaymentInfo && !successPopup && activeFloor === String(floor) && (
+
+
                   <div className="top-form-card mb-3" aria-live="polite">
                     <div className="row g-2 align-items-center">
                       <div className="col-12">
@@ -402,6 +469,8 @@ export default function Rooms() {
                             if (!confirmCode.trim()) return alert("Enter confirmation code!");
                             if (confirmCode.trim().toUpperCase() !== "MOHANSVPG") return alert("❌ Invalid code!");
                             handlePayNow();
+
+
                           }}
                         >
                           Pay & Confirm
@@ -410,6 +479,18 @@ export default function Rooms() {
                     </div>
                   </div>
                 )}
+                {/* INLINE SUCCESS POPUP (shows after payment) */}
+                {successPopup && activeFloor === String(floor) && (
+                  <div className="top-form-card inline-success-card">
+                    <div className="text-center">
+                      <div className="success-icon mb-2">✅</div>
+                      <h4 className="fw-bold text-success">Booking Successful!</h4>
+                      <p className="mb-1">Your bed has been reserved successfully.</p>
+                      <p className="text-muted">Redirecting to My Bookings…</p>
+                    </div>
+                  </div>
+                )}
+
 
                 {/* Rooms Grid */}
                 <div className="row g-3">
@@ -471,21 +552,7 @@ export default function Rooms() {
       </div>
 
       {/* SUCCESS CONFETTI POPUP */}
-      {successPopup && (
-        <div className="success-overlay">
-          <div className="success-popup glass">
-            <div className="success-icon">✅</div>
-            <h3>Booking Successful!</h3>
-            <p className="muted">Thanks — redirecting to My Bookings...</p>
-          </div>
 
-          <div className="confetti-layer" aria-hidden>
-            {Array.from({ length: 24 }).map((_, i) => (
-              <span key={i} className={`confetti c${(i % 6) + 1}`} />
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
